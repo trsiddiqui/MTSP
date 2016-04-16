@@ -1,0 +1,17 @@
+﻿Mobile Versions
+
+SELECT cp.name, cpv.version FROM `core_product`cp inner join core_productversion cpv where  cpv.version between 16 and 29 and cpv.deleted_by_id is null and cp.id = 4 and cpv.product_id = 4 and cpv.version not like '%Tablet%' ORDER BY `cpv`.`version` ASC
+16,17,18,19,20,21,22,23, 24, 25, 26, 27, 28, 29
+34,44,48,55,69,75,89,98,101,106,118,128,156,162
+
+MobileVersionTestCases
+SELECT lcv.productversion_id,lcv.name,lcv.description FROM library_caseversion lcv WHERE lcv.productversion_id in (34,44,48,55,69,75,89,98,101,106,118,128,156,162) order by lcv.productversion_id
+
+Select all test cases of a version
+SELECT lcv.productversion_id AS 'Version',lcv.id AS 'Test ID',lcs.instruction AS 'Instructions' FROM library_caseversion lcv left join library_casestep lcs on lcv.case_id = lcs.caseversion_id WHERE lcv.productversion_id in (34) and lcv.deleted_on is null and lcs.deleted_on is null order by lcv.id
+Select all test results of a version
+SELECT lcv.productversion_id AS 'Version',lcv.id as 'Test ID', er.status as 'Result' FROM library_caseversion lcv left join execution_runcaseversion ercv on lcv.id = ercv.caseversion_id inner join execution_result er on ercv.id = er.runcaseversion_id WHERE lcv.productversion_id in (34) and lcv.deleted_on is null and ercv.deleted_on is null and er.deleted_on is null order by lcv.id
+
+Tablet Versions
+
+SELECT cp.name, cpv.version FROM `core_product`cp inner join core_productversion cpv where  cpv.version between 16 and 29 and cpv.deleted_by_id is null and cp.id = 4 and cpv.product_id = 4 and cpv.version like '%Tablet%' ORDER BY `cpv`.`version` ASC

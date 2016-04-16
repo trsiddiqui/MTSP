@@ -12,9 +12,27 @@ using System.Data.OleDb;
 using System.Data;
 using OfficeOpenXml;
 using System.Xml.Serialization;
+using System.Text.RegularExpressions;
 
 namespace ExtractingTestCases
 {
+    public class MainTestCase
+    {
+        public int TestID { get; set; }
+        public int TestStepID { get; set; }
+        public bool Result { get; set; }
+        public MainTestCase(int testId, int stepId)
+        {
+            TestID = testId;
+            TestStepID = stepId;
+        }
+        public MainTestCase(int testId, int stepId, bool result)
+        {
+            TestID = testId;
+            TestStepID = stepId;
+            Result = result;
+        }
+    }
     public class TestCase
     {
         public int Id { get; set; }
@@ -33,18 +51,22 @@ namespace ExtractingTestCases
     class Program
     {
         #region constants
-        ////LITMUS 10
+        const string genericFolderToLookForTestCases = @"C:\Temp\SEALab\NLP-Project\Litmuss\litmus_@@\litmus.mozilla.org";
+        const string genericFileToExtractResultsOfTestCasesFrom = @"C:\Temp\SEALab\NLP-Project\Litmuss\litmus_@@\TestResults.txt";
+
+        //////LITMUS 10
         //const string folderToLookForTestCases = @"C:\Temp\SEALab\NLP-Project\Litmuss\litmus_10\litmus.mozilla.org";
         //const string fileToSaveExtractedRawTestCases = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_10_Rapid.txt";
         //const string fileToSaveExtractedAndTaggedTestCases = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_10_Rapid-Tagged.txt";
         //const string taggerModelPath = @"C:\Temp\SEALab\NLP-Project\TaggerModel\english-caseless-left3words-distsim.tagger";
         //const string fileToExtractResultsOfTestCasesFrom = @"C:\Temp\SEALab\NLP-Project\Litmuss\litmus_10\TestResults.txt";
-        //const string fileToSaveUniquePairs = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_10_UniquePair.txt";
+        //const string fileToSaveUniquePairs = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\Phase 2\ExtractedFiles\litmus_10_UniquePair.txt";//@"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_10_UniquePair.txt";
+        //const string fileToSaveTestIdWithUniquePairs = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\Phase 2\ExtractedFiles\litmus_10_TestIdWithUniquePair.txt";//@"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_10_TestIdWithUniquePair.txt";
+        //const string fileToSaveFailedTestIdWithUniquePairs = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\Phase 2\ExtractedFiles\litmus_10_TestIdWithUniquePair_Failed.txt";//@"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_50_TestIdWithUniquePair.txt";
         //const string fileToSaveUniqueMultiplets = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_10_UniqueMultiplets.txt";
-        //const string fileToSaveTestIdWithUniquePairs = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_10_TestIdWithUniquePair.txt";
         //const string fileToSaveTestIdWithUniqueMultiplets = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_10_TestIdWithUniqueMultiplets.txt";
         //const string fileToSaveTestIdWithTopicCounts = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\NounVerbCount\litmus_10_TestIdWithTopicCounts.txt";
-        //const string fileToSaveResultForCharts = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\OldVersionResults\NAPFD\litmus_10_ResultForCharts_APFD_.txt";
+        //const string fileToSaveResultForCharts = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\Phase 2\ExtractedFiles\OldVersionResults\NAPFD\litmus_10_ResultForCharts_APFD_.txt";//@"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\OldVersionResults\NAPFD\litmus_10_ResultForCharts_APFD_.txt";
         //const string fileToSaveResultForChartsNounVerbCount = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\OldVersionResults\CountMethod\APFD\litmus_10_ResultForCharts_APFD_.txt";
 
 
@@ -55,12 +77,13 @@ namespace ExtractingTestCases
         //const string fileToSaveExtractedAndTaggedTestCases = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_11_Rapid-Tagged.txt";
         //const string taggerModelPath = @"C:\Temp\SEALab\NLP-Project\TaggerModel\english-caseless-left3words-distsim.tagger";
         //const string fileToExtractResultsOfTestCasesFrom = @"C:\Temp\SEALab\NLP-Project\Litmuss\litmus_11\TestResults.txt";
-        //const string fileToSaveUniquePairs = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_11_UniquePair.txt";
+        //const string fileToSaveUniquePairs = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\Phase 2\ExtractedFiles\litmus_11_UniquePair.txt";//@"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_11_UniquePair.txt";
+        //const string fileToSaveTestIdWithUniquePairs = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\Phase 2\ExtractedFiles\litmus_11_TestIdWithUniquePair.txt";//@"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_11_TestIdWithUniquePair.txt";
+        //const string fileToSaveFailedTestIdWithUniquePairs = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\Phase 2\ExtractedFiles\litmus_11_TestIdWithUniquePair_Failed.txt";//@"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_50_TestIdWithUniquePair.txt";
         //const string fileToSaveUniqueMultiplets = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_11_UniqueMultiplets.txt";
-        //const string fileToSaveTestIdWithUniquePairs = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_11_TestIdWithUniquePair.txt";
         //const string fileToSaveTestIdWithUniqueMultiplets = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_11_TestIdWithUniqueMultiplets.txt";
         //const string fileToSaveTestIdWithTopicCounts = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\NounVerbCount\litmus_11_TestIdWithTopicCounts.txt";
-        //const string fileToSaveResultForCharts = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\OldVersionResults\NAPFD\litmus_11_ResultForCharts_APFD_.txt";
+        //const string fileToSaveResultForCharts = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\Phase 2\ExtractedFiles\OldVersionResults\APFD\litmus_11_ResultForCharts_APFD_.txt";//@"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\OldVersionResults\NAPFD\litmus_11_ResultForCharts_APFD_.txt";
         //const string fileToSaveResultForChartsNounVerbCount = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\OldVersionResults\CountMethod\APFD\litmus_11_ResultForCharts_APFD_.txt";
         ////LITMUS 12
         //const string folderToLookForTestCases = @"C:\Temp\SEALab\NLP-Project\Litmuss\litmus_12\litmus.mozilla.org";
@@ -68,12 +91,13 @@ namespace ExtractingTestCases
         //const string fileToSaveExtractedAndTaggedTestCases = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_12_Rapid-Tagged.txt";
         //const string taggerModelPath = @"C:\Temp\SEALab\NLP-Project\TaggerModel\english-caseless-left3words-distsim.tagger";
         //const string fileToExtractResultsOfTestCasesFrom = @"C:\Temp\SEALab\NLP-Project\Litmuss\litmus_12\TestResults.txt";
-        //const string fileToSaveUniquePairs = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_12_UniquePair.txt";
+        //const string fileToSaveUniquePairs = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\Phase 2\ExtractedFiles\litmus_12_UniquePair.txt";//@"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_12_UniquePair.txt";
+        //const string fileToSaveTestIdWithUniquePairs = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\Phase 2\ExtractedFiles\litmus_12_TestIdWithUniquePair.txt";//@"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_12_TestIdWithUniquePair.txt";
+        //const string fileToSaveFailedTestIdWithUniquePairs = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\Phase 2\ExtractedFiles\litmus_12_TestIdWithUniquePair_Failed.txt";//@"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_50_TestIdWithUniquePair.txt";
         //const string fileToSaveUniqueMultiplets = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_12_UniqueMultiplets.txt";
-        //const string fileToSaveTestIdWithUniquePairs = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_12_TestIdWithUniquePair.txt";
         //const string fileToSaveTestIdWithUniqueMultiplets = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_12_TestIdWithUniqueMultiplets.txt";
         //const string fileToSaveTestIdWithTopicCounts = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\NounVerbCount\litmus_12_TestIdWithTopicCounts.txt";
-        //const string fileToSaveResultForCharts = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\OldVersionResults\NAPFD\litmus_12_ResultForCharts_APFD_.txt";
+        //const string fileToSaveResultForCharts = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\Phase 2\ExtractedFiles\OldVersionResults\APFD\litmus_12_ResultForCharts_APFD_.txt";//@"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\OldVersionResults\NAPFD\litmus_12_ResultForCharts_APFD_.txt";
         //const string fileToSaveResultForChartsNounVerbCount = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\OldVersionResults\CountMethod\APFD\litmus_12_ResultForCharts_APFD_.txt";
 
         ////LITMUS 13
@@ -82,12 +106,13 @@ namespace ExtractingTestCases
         //const string fileToSaveExtractedAndTaggedTestCases = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_13_Rapid-Tagged.txt";
         //const string taggerModelPath = @"C:\Temp\SEALab\NLP-Project\TaggerModel\english-caseless-left3words-distsim.tagger";
         //const string fileToExtractResultsOfTestCasesFrom = @"C:\Temp\SEALab\NLP-Project\Litmuss\litmus_13\TestResults.txt";
-        //const string fileToSaveUniquePairs = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_13_UniquePair.txt";
+        //const string fileToSaveUniquePairs = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\Phase 2\ExtractedFiles\litmus_13_UniquePair.txt";//@"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_13_UniquePair.txt";
+        //const string fileToSaveTestIdWithUniquePairs = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\Phase 2\ExtractedFiles\litmus_13_TestIdWithUniquePair.txt";//@"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_13_TestIdWithUniquePair.txt";
+        //const string fileToSaveFailedTestIdWithUniquePairs = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\Phase 2\ExtractedFiles\litmus_13_TestIdWithUniquePair_Failed.txt";//@"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_50_TestIdWithUniquePair.txt";
         //const string fileToSaveUniqueMultiplets = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_13_UniqueMultiplets.txt";
-        //const string fileToSaveTestIdWithUniquePairs = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_13_TestIdWithUniquePair.txt";
         //const string fileToSaveTestIdWithUniqueMultiplets = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_13_TestIdWithUniqueMultiplets.txt";
         //const string fileToSaveTestIdWithTopicCounts = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\NounVerbCount\litmus_13_TestIdWithTopicCounts.txt";
-        //const string fileToSaveResultForCharts = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\OldVersionResults\NAPFD\litmus_13_ResultForCharts_APFD_.txt";
+        //const string fileToSaveResultForCharts = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\Phase 2\ExtractedFiles\OldVersionResults\NAPFD\litmus_13_ResultForCharts_APFD_.txt";//@"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\OldVersionResults\NAPFD\litmus_13_ResultForCharts_APFD_.txt";
         //const string fileToSaveResultForChartsNounVerbCount = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\OldVersionResults\CountMethod\APFD\litmus_13_ResultForCharts_APFD_.txt";
 
         ////LITMUS 14
@@ -96,13 +121,83 @@ namespace ExtractingTestCases
         //const string fileToSaveExtractedAndTaggedTestCases = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_14_Rapid-Tagged.txt";
         //const string taggerModelPath = @"C:\Temp\SEALab\NLP-Project\TaggerModel\english-caseless-left3words-distsim.tagger";
         //const string fileToExtractResultsOfTestCasesFrom = @"C:\Temp\SEALab\NLP-Project\Litmuss\litmus_14\TestResults.txt";
-        //const string fileToSaveUniquePairs = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_14_UniquePair.txt";
+        //const string fileToSaveUniquePairs = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\Phase 2\ExtractedFiles\litmus_14_UniquePair.txt";//@"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_14_UniquePair.txt";
+        //const string fileToSaveTestIdWithUniquePairs = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\Phase 2\ExtractedFiles\litmus_14_TestIdWithUniquePair.txt";//@"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_14_TestIdWithUniquePair.txt";
+        //const string fileToSaveFailedTestIdWithUniquePairs = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\Phase 2\ExtractedFiles\litmus_14_TestIdWithUniquePair_Failed.txt";//@"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_50_TestIdWithUniquePair.txt";
         //const string fileToSaveUniqueMultiplets = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_14_UniqueMultiplets.txt";
-        //const string fileToSaveTestIdWithUniquePairs = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_14_TestIdWithUniquePair.txt";
         //const string fileToSaveTestIdWithUniqueMultiplets = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_14_TestIdWithUniqueMultiplets.txt";
         //const string fileToSaveTestIdWithTopicCounts = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\NounVerbCount\litmus_14_TestIdWithTopicCounts.txt";
-        //const string fileToSaveResultForCharts = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\OldVersionResults\NAPFD\litmus_14_ResultForCharts_APFD_.txt";
+        //const string fileToSaveResultForCharts = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\Phase 2\ExtractedFiles\OldVersionResults\APFD\litmus_14_ResultForCharts_APFD_.txt";// @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\OldVersionResults\NAPFD\litmus_14_ResultForCharts_APFD_.txt";
         //const string fileToSaveResultForChartsNounVerbCount = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\OldVersionResults\CountMethod\APFD\litmus_14_ResultForCharts_APFD_.txt";
+
+
+
+
+
+
+
+
+
+
+
+        ////LITMUS 30
+        //const string folderToLookForTestCases = @"C:\Temp\SEALab\NLP-Project\Litmuss\litmus_30\litmus.mozilla.org";
+        //const string fileToSaveExtractedRawTestCases = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_30_Rapid.txt";
+        //const string fileToSaveExtractedAndTaggedTestCases = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_30_Rapid-Tagged.txt";
+        //const string taggerModelPath = @"C:\Temp\SEALab\NLP-Project\TaggerModel\english-caseless-left3words-distsim.tagger";
+        //const string fileToExtractResultsOfTestCasesFrom = @"C:\Temp\SEALab\NLP-Project\Litmuss\litmus_30\TestResults.txt";
+        //const string fileToSaveUniquePairs = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\Phase 2\ExtractedFiles\litmus_30_UniquePair.txt";//@"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_30_UniquePair.txt";
+        //const string fileToSaveTestIdWithUniquePairs = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\Phase 2\ExtractedFiles\litmus_30_TestIdWithUniquePair.txt";//@"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_30_TestIdWithUniquePair.txt";
+        //const string fileToSaveFailedTestIdWithUniquePairs = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\Phase 2\ExtractedFiles\litmus_30_TestIdWithUniquePair_Failed.txt";//@"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_50_TestIdWithUniquePair.txt";
+        //const string fileToSaveUniqueMultiplets = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_30_UniqueMultiplets.txt";
+        //const string fileToSaveTestIdWithUniqueMultiplets = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_30_TestIdWithUniqueMultiplets.txt";
+        //const string fileToSaveTestIdWithTopicCounts = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\NounVerbCount\litmus_30_TestIdWithTopicCounts.txt";
+        //const string fileToSaveResultForCharts = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\Phase 2\ExtractedFiles\OldVersionResults\APFD\litmus_30_ResultForCharts_APFD_.txt";//@"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\OldVersionResults\NAPFD\litmus_30_ResultForCharts_APFD_.txt";
+        //const string fileToSaveResultForChartsNounVerbCount = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\OldVersionResults\CountMethod\APFD\litmus_30_ResultForCharts_APFD_.txt";
+
+
+        ////LITMUS 35
+        //const string folderToLookForTestCases = @"C:\Temp\SEALab\NLP-Project\Litmuss\litmus_35\litmus.mozilla.org";
+        //const string fileToSaveExtractedRawTestCases = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_35_Rapid.txt";
+        //const string fileToSaveExtractedAndTaggedTestCases = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_35_Rapid-Tagged.txt";
+        //const string taggerModelPath = @"C:\Temp\SEALab\NLP-Project\TaggerModel\english-caseless-left3words-distsim.tagger";
+        //const string fileToExtractResultsOfTestCasesFrom = @"C:\Temp\SEALab\NLP-Project\Litmuss\litmus_35\TestResults.txt";
+        //const string fileToSaveUniquePairs = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\Phase 2\ExtractedFiles\litmus_35_UniquePair.txt";//@"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_35_UniquePair.txt";
+        //const string fileToSaveTestIdWithUniquePairs = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\Phase 2\ExtractedFiles\litmus_35_TestIdWithUniquePair.txt";//@"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_35_TestIdWithUniquePair.txt";
+        //const string fileToSaveFailedTestIdWithUniquePairs = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\Phase 2\ExtractedFiles\litmus_35_TestIdWithUniquePair_Failed.txt";//@"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_50_TestIdWithUniquePair.txt";
+        //const string fileToSaveUniqueMultiplets = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_35_UniqueMultiplets.txt";
+        //const string fileToSaveTestIdWithUniqueMultiplets = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_35_TestIdWithUniqueMultiplets.txt";
+        //const string fileToSaveTestIdWithTopicCounts = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\NounVerbCount\litmus_35_TestIdWithTopicCounts.txt";
+        //const string fileToSaveResultForCharts = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\Phase 2\ExtractedFiles\OldVersionResults\APFD\litmus_35_ResultForCharts_APFD_.txt";//@"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\OldVersionResults\NAPFD\litmus_35_ResultForCharts_APFD_.txt";
+        //const string fileToSaveResultForChartsNounVerbCount = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\OldVersionResults\CountMethod\APFD\litmus_35_ResultForCharts_APFD_.txt";
+
+
+        ////LITMUS 36
+        //const string folderToLookForTestCases = @"C:\Temp\SEALab\NLP-Project\Litmuss\litmus_36\litmus.mozilla.org";
+        //const string fileToSaveExtractedRawTestCases = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_36_Rapid.txt";
+        //const string fileToSaveExtractedAndTaggedTestCases = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_36_Rapid-Tagged.txt";
+        //const string taggerModelPath = @"C:\Temp\SEALab\NLP-Project\TaggerModel\english-caseless-left3words-distsim.tagger";
+        //const string fileToExtractResultsOfTestCasesFrom = @"C:\Temp\SEALab\NLP-Project\Litmuss\litmus_36\TestResults.txt";
+        //const string fileToSaveUniquePairs = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\Phase 2\ExtractedFiles\litmus_36_UniquePair.txt";//@"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_36_UniquePair.txt";
+        //const string fileToSaveTestIdWithUniquePairs = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\Phase 2\ExtractedFiles\litmus_36_TestIdWithUniquePair.txt";//@"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_36_TestIdWithUniquePair.txt";
+        //const string fileToSaveFailedTestIdWithUniquePairs = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\Phase 2\ExtractedFiles\litmus_36_TestIdWithUniquePair_Failed.txt";//@"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_50_TestIdWithUniquePair.txt";
+        //const string fileToSaveUniqueMultiplets = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_36_UniqueMultiplets.txt";
+        //const string fileToSaveTestIdWithUniqueMultiplets = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_36_TestIdWithUniqueMultiplets.txt";
+        //const string fileToSaveTestIdWithTopicCounts = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\NounVerbCount\litmus_36_TestIdWithTopicCounts.txt";
+        //const string fileToSaveResultForCharts = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\Phase 2\ExtractedFiles\OldVersionResults\APFD\litmus_36_ResultForCharts_APFD_.txt";//@"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\OldVersionResults\NAPFD\litmus_36_ResultForCharts_APFD_.txt";
+        //const string fileToSaveResultForChartsNounVerbCount = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\OldVersionResults\CountMethod\APFD\litmus_36_ResultForCharts_APFD_.txt";
+
+
+
+
+
+
+
+
+
+
+
+
 
         ////LITMUS 40
         //const string folderToLookForTestCases = @"C:\Temp\SEALab\NLP-Project\Litmuss\litmus_40\litmus.mozilla.org";
@@ -110,12 +205,13 @@ namespace ExtractingTestCases
         //const string fileToSaveExtractedAndTaggedTestCases = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_40_Rapid-Tagged.txt";
         //const string taggerModelPath = @"C:\Temp\SEALab\NLP-Project\TaggerModel\english-caseless-left3words-distsim.tagger";
         //const string fileToExtractResultsOfTestCasesFrom = @"C:\Temp\SEALab\NLP-Project\Litmuss\litmus_40\TestResults.txt";
-        //const string fileToSaveUniquePairs = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_40_UniquePair.txt";
+        //const string fileToSaveUniquePairs = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\Phase 2\ExtractedFiles\litmus_40_UniquePair.txt";//@"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_40_UniquePair.txt";
+        //const string fileToSaveTestIdWithUniquePairs = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\Phase 2\ExtractedFiles\litmus_40_TestIdWithUniquePair.txt";//@"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_40_TestIdWithUniquePair.txt";
+        //const string fileToSaveFailedTestIdWithUniquePairs = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\Phase 2\ExtractedFiles\litmus_40_TestIdWithUniquePair_Failed.txt";//@"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_50_TestIdWithUniquePair.txt";
         //const string fileToSaveUniqueMultiplets = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_40_UniqueMultiplets.txt";
-        //const string fileToSaveTestIdWithUniquePairs = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_40_TestIdWithUniquePair.txt";
         //const string fileToSaveTestIdWithUniqueMultiplets = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_40_TestIdWithUniqueMultiplets.txt";
         //const string fileToSaveTestIdWithTopicCounts = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\NounVerbCount\litmus_40_TestIdWithTopicCounts.txt";
-        //const string fileToSaveResultForCharts = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\OldVersionResults\NAPFD\litmus_40_ResultForCharts_APFD_.txt";
+        //const string fileToSaveResultForCharts = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\Phase 2\ExtractedFiles\OldVersionResults\APFD\litmus_40_ResultForCharts_APFD_.txt";//@"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\OldVersionResults\NAPFD\litmus_40_ResultForCharts_APFD_.txt";
         //const string fileToSaveResultForChartsNounVerbCount = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\OldVersionResults\CountMethod\APFD\litmus_40_ResultForCharts_APFD_.txt";
         ////LITMUS 50
         //const string folderToLookForTestCases = @"C:\Temp\SEALab\NLP-Project\Litmuss\litmus_50\litmus.mozilla.org";
@@ -123,14 +219,15 @@ namespace ExtractingTestCases
         //const string fileToSaveExtractedAndTaggedTestCases = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_50_Rapid-Tagged.txt";
         //const string taggerModelPath = @"C:\Temp\SEALab\NLP-Project\TaggerModel\english-caseless-left3words-distsim.tagger";
         //const string fileToExtractResultsOfTestCasesFrom = @"C:\Temp\SEALab\NLP-Project\Litmuss\litmus_50\TestResults.txt";
-        //const string fileToSaveUniquePairs = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_50_UniquePair.txt";
+        //const string fileToSaveUniquePairs = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\Phase 2\ExtractedFiles\litmus_50_UniquePair.txt";//@"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_50_UniquePair.txt";
+        //const string fileToSaveTestIdWithUniquePairs = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\Phase 2\ExtractedFiles\litmus_50_TestIdWithUniquePair.txt";//@"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_50_TestIdWithUniquePair.txt";
+        //const string fileToSaveFailedTestIdWithUniquePairs = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\Phase 2\ExtractedFiles\litmus_50_TestIdWithUniquePair_Failed.txt";//@"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_50_TestIdWithUniquePair.txt";
         //const string fileToSaveUniqueMultiplets = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_50_UniqueMultiplets.txt";
-        //const string fileToSaveTestIdWithUniquePairs = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_50_TestIdWithUniquePair.txt";
         //const string fileToSaveTestIdWithUniqueMultiplets = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_50_TestIdWithUniqueMultiplets.txt";
         //const string fileToSaveTestIdWithTopicCounts = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\NounVerbCount\litmus_50_TestIdWithTopicCounts.txt";
-        //const string fileToSaveResultForCharts = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\OldVersionResults\NAPFD\litmus_50_ResultForCharts_APFD_.txt";
+        //const string fileToSaveResultForCharts = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\Phase 2\ExtractedFiles\OldVersionResults\APFD\litmus_50_ResultForCharts_APFD_.txt";//@"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\OldVersionResults\NAPFD\litmus_50_ResultForCharts_APFD_.txt";
         //const string fileToSaveResultForChartsNounVerbCount = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\OldVersionResults\CountMethod\APFD\litmus_50_ResultForCharts_APFD_.txt";
-        ////LITMUS 60
+        //LITMUS 60
         //const string folderToLookForTestCases = @"C:\Temp\SEALab\NLP-Project\Litmuss\litmus_60\litmus.mozilla.org";
         //const string fileToSaveExtractedRawTestCases = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_60_Rapid.txt";
         //const string fileToSaveExtractedAndTaggedTestCases = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_60_Rapid-Tagged.txt";
@@ -138,10 +235,11 @@ namespace ExtractingTestCases
         //const string fileToExtractResultsOfTestCasesFrom = @"C:\Temp\SEALab\NLP-Project\Litmuss\litmus_60\TestResults.txt";
         //const string fileToSaveUniquePairs = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_60_UniquePair.txt";
         //const string fileToSaveUniqueMultiplets = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_60_UniqueMultiplets.txt";
-        //const string fileToSaveTestIdWithUniquePairs = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_60_TestIdWithUniquePair.txt";
-        //const string fileToSaveTestIdWithUniqueMultiplets = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_60_TestIdWithUniqueMultiplets.txt";
+        //const string fileToSaveTestIdWithUniquePairs = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\Phase 2\ExtractedFiles\litmus_60_TestIdWithUniquePair.txt";// @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_60_TestIdWithUniquePair.txt";
+        //const string fileToSaveTestIdWithUniqueMultiplets = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\Phase 2\ExtractedFiles\litmus_60_TestIdWithUniquePair.txt";//@"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_60_TestIdWithUniqueMultiplets.txt";
+        //const string fileToSaveFailedTestIdWithUniquePairs = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\Phase 2\ExtractedFiles\litmus_60_TestIdWithUniquePair_Failed.txt";//@"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_50_TestIdWithUniquePair.txt";
         //const string fileToSaveTestIdWithTopicCounts = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\NounVerbCount\litmus_60_TestIdWithTopicCounts.txt";
-        //const string fileToSaveResultForCharts = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\OldVersionResults\NAPFD\litmus_60_ResultForCharts_APFD_.txt";
+        //const string fileToSaveResultForCharts = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\Phase 2\ExtractedFiles\OldVersionResults\APFD\litmus_60_ResultForCharts_APFD_.txt";//@"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\OldVersionResults\NAPFD\litmus_60_ResultForCharts_APFD_.txt";
         //const string fileToSaveResultForChartsNounVerbCount = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\OldVersionResults\CountMethod\APFD\litmus_60_ResultForCharts_APFD_.txt";
         ////LITMUS 70
         //const string folderToLookForTestCases = @"C:\Temp\SEALab\NLP-Project\Litmuss\litmus_70\litmus.mozilla.org";
@@ -149,12 +247,13 @@ namespace ExtractingTestCases
         //const string fileToSaveExtractedAndTaggedTestCases = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_70_Rapid-Tagged.txt";
         //const string taggerModelPath = @"C:\Temp\SEALab\NLP-Project\TaggerModel\english-caseless-left3words-distsim.tagger";
         //const string fileToExtractResultsOfTestCasesFrom = @"C:\Temp\SEALab\NLP-Project\Litmuss\litmus_70\TestResults.txt";
-        //const string fileToSaveUniquePairs = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_70_UniquePair.txt";
+        //const string fileToSaveUniquePairs = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\Phase 2\ExtractedFiles\litmus_70_UniquePair.txt";//@"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_70_UniquePair.txt";
+        //const string fileToSaveTestIdWithUniquePairs = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\Phase 2\ExtractedFiles\litmus_70_TestIdWithUniquePair.txt";//@"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_70_TestIdWithUniquePair.txt";
+        //const string fileToSaveFailedTestIdWithUniquePairs = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\Phase 2\ExtractedFiles\litmus_70_TestIdWithUniquePair_Failed.txt";//@"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_50_TestIdWithUniquePair.txt";
         //const string fileToSaveUniqueMultiplets = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_70_UniqueMultiplets.txt";
-        //const string fileToSaveTestIdWithUniquePairs = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_70_TestIdWithUniquePair.txt";
         //const string fileToSaveTestIdWithUniqueMultiplets = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_70_TestIdWithUniqueMultiplets.txt";
         //const string fileToSaveTestIdWithTopicCounts = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\NounVerbCount\litmus_70_TestIdWithTopicCounts.txt";
-        //const string fileToSaveResultForCharts = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\OldVersionResults\NAPFD\litmus_70_ResultForCharts_APFD_.txt";
+        //const string fileToSaveResultForCharts = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\Phase 2\ExtractedFiles\OldVersionResults\APFD\litmus_70_ResultForCharts_APFD_.txt";//@"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\OldVersionResults\NAPFD\litmus_70_ResultForCharts_APFD_.txt";
         //const string fileToSaveResultForChartsNounVerbCount = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\OldVersionResults\CountMethod\APFD\litmus_70_ResultForCharts_APFD_.txt";
         //LITMUS 80
         //const string folderToLookForTestCases = @"C:\Temp\SEALab\NLP-Project\Litmuss\litmus_80\litmus.mozilla.org";
@@ -162,52 +261,90 @@ namespace ExtractingTestCases
         //const string fileToSaveExtractedAndTaggedTestCases = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_80_Rapid-Tagged.txt";
         //const string taggerModelPath = @"C:\Temp\SEALab\NLP-Project\TaggerModel\english-caseless-left3words-distsim.tagger";
         //const string fileToExtractResultsOfTestCasesFrom = @"C:\Temp\SEALab\NLP-Project\Litmuss\litmus_80\TestResults.txt";
-        //const string fileToSaveUniquePairs = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_80_UniquePair.txt";
+        //const string fileToSaveUniquePairs = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\Phase 2\ExtractedFiles\litmus_80_UniquePair.txt";//@"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_80_UniquePair.txt";
+        //const string fileToSaveTestIdWithUniquePairs = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\Phase 2\ExtractedFiles\litmus_80_TestIdWithUniquePair.txt";//@"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_80_TestIdWithUniquePair.txt";
+        //const string fileToSaveFailedTestIdWithUniquePairs = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\Phase 2\ExtractedFiles\litmus_80_TestIdWithUniquePair_Failed.txt";//@"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_50_TestIdWithUniquePair.txt";
         //const string fileToSaveUniqueMultiplets = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_80_UniqueMultiplets.txt";
-        //const string fileToSaveTestIdWithUniquePairs = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_80_TestIdWithUniquePair.txt";
         //const string fileToSaveTestIdWithUniqueMultiplets = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_80_TestIdWithUniqueMultiplets.txt";
         //const string fileToSaveTestIdWithTopicCounts = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\NounVerbCount\litmus_80_TestIdWithTopicCounts.txt";
-        //const string fileToSaveResultForCharts = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\OldVersionResults\NAPFD\litmus_80_ResultForCharts_APFD_.txt";
+        //const string fileToSaveResultForCharts = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\Phase 2\ExtractedFiles\OldVersionResults\APFD\litmus_80_ResultForCharts_APFD_.txt";//@"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\OldVersionResults\NAPFD\litmus_80_ResultForCharts_APFD_.txt";
         //const string fileToSaveResultForChartsNounVerbCount = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\OldVersionResults\CountMethod\APFD\litmus_80_ResultForCharts_APFD_.txt";
-        ////LITMUS 90
+        //LITMUS 90
         const string folderToLookForTestCases = @"C:\Temp\SEALab\NLP-Project\Litmuss\litmus_90\litmus.mozilla.org";
         const string fileToSaveExtractedRawTestCases = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_90_Rapid.txt";
         const string fileToSaveExtractedAndTaggedTestCases = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_90_Rapid-Tagged.txt";
         const string taggerModelPath = @"C:\Temp\SEALab\NLP-Project\TaggerModel\english-caseless-left3words-distsim.tagger";
         const string fileToExtractResultsOfTestCasesFrom = @"C:\Temp\SEALab\NLP-Project\Litmuss\litmus_90\TestResults.txt";
-        const string fileToSaveUniquePairs = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_90_UniquePair.txt";
+        const string fileToSaveUniquePairs = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\Phase 2\ExtractedFiles\litmus_90_UniquePair.txt";//@"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_90_UniquePair.txt";
+        const string fileToSaveTestIdWithUniquePairs = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\Phase 2\ExtractedFiles\litmus_90_TestIdWithUniquePair.txt";//@"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_90_TestIdWithUniquePair.txt";
+        const string fileToSaveFailedTestIdWithUniquePairs = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\Phase 2\ExtractedFiles\litmus_90_TestIdWithUniquePair_Failed.txt";//@"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_50_TestIdWithUniquePair.txt";
         const string fileToSaveUniqueMultiplets = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_90_UniqueMultiplets.txt";
-        const string fileToSaveTestIdWithUniquePairs = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_90_TestIdWithUniquePair.txt";
         const string fileToSaveTestIdWithUniqueMultiplets = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_90_TestIdWithUniqueMultiplets.txt";
         const string fileToSaveTestIdWithTopicCounts = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\NounVerbCount\litmus_90_TestIdWithTopicCounts.txt";
-        const string fileToSaveResultForCharts = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\OldVersionResults\NAPFD\litmus_90_ResultForCharts_APFD_.txt";
+        const string fileToSaveResultForCharts = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\Phase 2\ExtractedFiles\OldVersionResults\NAPFD\litmus_90_ResultForCharts_APFD_.txt";//@"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\OldVersionResults\NAPFD\litmus_90_ResultForCharts_APFD_.txt";
         const string fileToSaveResultForChartsNounVerbCount = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\OldVersionResults\CountMethod\APFD\litmus_90_ResultForCharts_APFD_.txt";
 
         #endregion
 
         const string excelPathForTestCases = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\TestSteps.xlsx";
         const string excelPathForTestCasesResults = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\TestResults.xlsx";
-        const string directoryForExtractedTestCases = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\LatestVersions";
+        const string directoryForExtractedTestCases = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\Phase 2\NewVersions";
 
-        const double NAPFDConstant = 1;
+        public static double NAPFDConstant = 1;
         static void Main(string[] args)
         {
             var program = new Program();
             bool interactive = true;
-            //program.QueryExcelForNewVersions();
-            //program.ProcessSerializedTestCases();
-            //program.MakeNounVerbPairsForExcel(interactive);
-            //program.PrepareResultsFromExcel();
-            //program.OrderForNounVerbPairExcel(interactive);
+            ////////program.QueryExcelForNewVersions();
+            ////////program.ProcessSerializedTestCases();
+            ////////program.MakeNounVerbPairsForExcel(interactive);
+            ////////program.PrepareResultsFromExcel();
+            ////////for (NAPFDConstant = 0.10; NAPFDConstant < 1.0; NAPFDConstant += 0.1)
+            ////////program.OrderForNounVerbPairExcel(interactive);
 
             //program.ExtractTestCases(interactive);
+
+            //program.CompileResults();
+            //program.FetchExtractedTestIDsGetWholeResults();
+
+
+            //program.ProcessAllPairsInALitmus();
+            program.IndexAllPairsInLitmus();
+
+            //program.ProcessAllNounsInALitmus();
+            //program.IndexAllNounsInLitmus();
+
+
+
+
+            //program.GetTestCasesFromExtractedCSVs();
+            //program.CompileResultsMySQL();
+            //program.FetchExtractedTestIDsGetWholeResultsMySQL();
+            //program.MakeNounVerbPairsForMySQL(interactive);
+
+
+
+            //program.ProcessTrace();
+
+
             //program.MakeNounVerbPairs(interactive);
+
+            //program.MakeNounOnly(interactive);
+            //for (NAPFDConstant = 0.10; NAPFDConstant < 1.0; NAPFDConstant += 0.1)
             //program.OrderForNounVerbPair(interactive); //FindIfTestCasesMissing(interactive);
 
-            //program.MakeNounVerbMultiplets(interactive);            
-            program.CountNounAndVerbCombined(interactive);
-            program.OrderForTopicCounts(interactive);
+            //program.MakeNounVerbMultiplets(interactive);    
 
+
+            //program.CountNounAndVerbCombined(interactive);
+            //program.OrderForTopicCounts(interactive);
+
+
+            //program.CountNounAndVerbCombinedForExcel(interactive);
+            //program.OrderForTopicCountsForExcel(interactive);
+
+            //System.Media.SoundPlayer player = new System.Media.SoundPlayer(@"c:\bing.wav");
+            //player.Play();
         }
 
         public void PrepareResultsFromExcel()
@@ -405,7 +542,7 @@ namespace ExtractingTestCases
             var tagger = new MaxentTagger(taggerModelPath);
             StringBuilder allFiles = new StringBuilder();
             StringBuilder allTaggedFiles = new StringBuilder();
-            var files = Directory.EnumerateFiles(folderToLookForTestCases, "*.*");
+            var files = Directory.EnumerateFiles(folderToLookForTestCases, "show_test.*");
             var filesProcessed = 0.0;
             var fileCount = files.Count();
             foreach (string file in files)
@@ -414,7 +551,8 @@ namespace ExtractingTestCases
                 Console.Out.WriteLine((float)filesProcessed++ / (float)fileCount * 100 + " % ");
                 //OLD:Fetching only Page 0 if multiple pages of a test case exist, same steps in all
                 //NEW:Fetching Single_Result files only, because we only have results for those
-                if (file.Contains("single_result") && file.Contains("id=") && !file.Contains("&page="))
+                //if (file.Contains("single_result") && file.Contains("id=") && !file.Contains("&page="))
+                if (file.Contains("show_test") && file.Contains("id=") && !file.Contains("&page="))
                 {
 
                     string contents = File.ReadAllText(file);
@@ -422,7 +560,6 @@ namespace ExtractingTestCases
                     foreach (var str in specialCharacters)
                     {
                         contents = contents.Replace(@str, "");
-
                     }
                     HtmlDocument doc = new HtmlDocument();
                     doc.LoadHtml(contents);
@@ -513,81 +650,557 @@ namespace ExtractingTestCases
         }
         #endregion
 
-        #region NounVerbPairs
-        public void MakeNounVerbPairs(bool interactive)
-        {
-            string[] verbTags = { "VV", "VB", "VBD", "VBG", "VBN", "VBP", "VBZ" };
-            var contents = File.ReadAllText(fileToSaveExtractedAndTaggedTestCases);
-            var finalString = new StringBuilder();
-            int currentTestCaseID = -1;
-            var allPairs = new List<string>();
-            var testCase_NounVerbPair = new List<KeyValuePair<int, List<string>>>();
-            var totalLines = contents.Split(new string[] { "\n" }, StringSplitOptions.RemoveEmptyEntries).Count();
-            var passedLines = 0;
-            //Traversing through lines in tagged file
-            foreach (var line in contents.Split(new string[] { "\n" }, StringSplitOptions.RemoveEmptyEntries))
-            {
 
-                var currentTestCaseHeader = "";
-                //IF line is not starting of a test case
-                if (!line.Contains("Test Case ID: "))
+
+
+
+        #region Compile Result
+        public void CompileResults()
+        {
+            var versions = new int[] { /*10, 11, 12, 13, 30, 35, 36, 40, */50, 60, 70, 80, 90 };
+            foreach (var version in versions)
+            {
+                var files = Directory.EnumerateFiles(genericFolderToLookForTestCases.Replace("@@", version.ToString()), "single_result.*");
+                var filesProcessed = 0.0;
+                var fileCount = files.Count();
+                List<MainTestCase> ShowTest_SingleResultPairs = new List<MainTestCase>();
+                foreach (string file in files)
                 {
-                    string previousTag = "";
-                    string previousWord = "";
-                    foreach (var taggedWord in line.Split(new String[] { " " }, StringSplitOptions.RemoveEmptyEntries).Where(x => x.Contains('/')))
+                    //if (interactive)
+                    Console.Out.WriteLine((float)filesProcessed++ / (float)fileCount * 100 + " % ");
+                    if (file.Contains("single_result") && file.Contains("id=") && !file.Contains("&page="))
                     {
-                        string currentWord = taggedWord.Split('/')[0];
-                        string currentTag = taggedWord.Split('/')[1];
-                        //IF this word is a verb, then store the word as previous word (to be used as the first word in a pair)
-                        if (verbTags.Contains(currentTag))
+                        string contents = File.ReadAllText(file);
+                        if (contents.IndexOf("show_test.cgi?id=") != -1)
                         {
-                            previousTag = currentTag;
-                            previousWord = currentWord;
-                        }
-                        else
-                        {
-                            //ELSE it can only be a noun, so make a pair using the previous word, and add it in the list AllPairs and finalString
-                            //AND also store it in the matrix (KeyValue pair of (testcase,List of pairs))
-                            if (!string.IsNullOrEmpty(previousWord))
-                            {
-                                var pair = "(" + previousWord.ToLower() + "_" + currentWord.ToLower() + ")";
-                                allPairs.Add(pair);
-                                finalString.Append(pair);
-                                testCase_NounVerbPair.FirstOrDefault(x => x.Key == currentTestCaseID).Value.Add(pair);
-                            }
+                            string testId = contents.Substring(contents.IndexOf("show_test.cgi?id=") + 17).Split('\"')[0];
+                            ShowTest_SingleResultPairs.Add(new MainTestCase(Convert.ToInt32(testId), Convert.ToInt32(file.Substring(file.IndexOf("id=") + 3).Replace(".txt", "").Replace(".html", ""))));
                         }
                     }
                 }
-                //IF line is starting of a test case, then store the current test case information
-                else
+
+                //File.WriteAllText(@"C:\Temp\TEMP1.txt", );
+
+                var resultFile = File.ReadAllLines(genericFileToExtractResultsOfTestCasesFrom.Replace("@@", version.ToString()));
+                var totalFaults = 0;
+                //record results in this list, and put true if a test case passes else false for fail or bad test case
+                List<KeyValuePair<int, bool>> testResults = new List<KeyValuePair<int, bool>>();
+                foreach (var line in resultFile)
                 {
-                    var temp = line.Split(new String[] { ": " }, StringSplitOptions.RemoveEmptyEntries)[1].Split('~')[0];
-                    if (temp.Contains("."))
-                        currentTestCaseID = Convert.ToInt32(temp.Split('.')[0]);
-                    else
-                        currentTestCaseID = Convert.ToInt32(temp);
-                    testCase_NounVerbPair.Add(new KeyValuePair<int, List<string>>(currentTestCaseID, new List<string>()));
-                    currentTestCaseHeader = line;
-                    finalString.Append(currentTestCaseHeader + "\n");
+                    if (line.Contains("id="))
+                    {
+                        var testId = Convert.ToInt32(line.Substring(line.IndexOf("id=") + 3/*for i d =*/).Split('~')[0]);
+                        if (line.Substring(0, 10).Contains("Pass"))
+                        {
+                            testResults.Add(new KeyValuePair<int, bool>(testId, true));
+                        }
+                        else
+                        {
+                            totalFaults++;
+                            testResults.Add(new KeyValuePair<int, bool>(testId, false));
+                        }
+                    }
                 }
-                finalString.Append("\n");
-                passedLines++;
-                if (interactive)
+                var newObj = new List<MainTestCase>();
+                foreach (var test in ShowTest_SingleResultPairs)
                 {
-                    Console.Clear();
-                    Console.Out.WriteLine((float)passedLines / (float)totalLines * 100 + "%");
+                    if (testResults.Any(x => x.Key == test.TestStepID))
+                    {
+                        var result = testResults.FirstOrDefault(x => x.Key == test.TestStepID);
+                        newObj.Add(new MainTestCase(test.TestID, test.TestStepID, result.Value));
+                    }
+                }
+                Dictionary<int, bool> testResult = new Dictionary<int, bool>();
+                foreach (var testStep in newObj)
+                {
+                    if (!testResult.Any(x => x.Key == testStep.TestID))
+                    {
+                        testResult.Add(testStep.TestID, testStep.Result);
+                    }
+                    else
+                    {
+                        var oldResult = testResult.FirstOrDefault(x => x.Key == testStep.TestID).Value;
+                        testResult[testStep.TestID] = oldResult & testStep.Result;
+                    }
+                }
+                File.WriteAllLines(@"C:\TEMP\Result_" + version + ".txt",
+    testResult.Select(x => "[" + x.Key + " " + x.Value + "]").ToArray());
+
+            }
+            //Saving test cases
+            //File.WriteAllText(fileToSaveExtractedRawTestCases, allFiles.ToString());
+            //File.WriteAllText(fileToSaveExtractedAndTaggedTestCases, allTaggedFiles.ToString());
+        }
+        #endregion
+        #region Verify Results
+        public void FetchExtractedTestIDsGetWholeResults()
+        {
+            var versions = new int[] { 10, 11, 12, 13, 30, 35, 36, 40, 50, 60, 70, 80, 90 };
+            foreach (var v in versions)
+            {
+                var tests = File.ReadAllLines(@"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_@@_Rapid-Tagged.txt".Replace("@@", v.ToString()));
+                var results = File.ReadAllLines(@"C:\Temp\Result_@@.txt".Replace(@"@@", v.ToString()));
+                var r = new Dictionary<int, bool>();
+                List<int> t = new List<int>();
+                var compiledResults = new Dictionary<int, bool>();
+                foreach (var line in tests.Where(x => x.Contains("Test Case ID: ")))
+                {
+                    t.Add(Convert.ToInt32(line.Substring(line.IndexOf("id=") + 3)));
+                }
+                foreach (var line in results)
+                {
+                    var temp = line.Replace("[", "").Replace("]", "").Split(' ');
+                    r.Add(Convert.ToInt32(temp[0]), Convert.ToBoolean(temp[1]));
+                }
+                foreach (var test in t)
+                {
+                    if (r.Any(x => x.Key == test))
+                    {
+                        var temp = r.Where(x => x.Key == test);
+                        compiledResults.Add(temp.FirstOrDefault().Key, temp.FirstOrDefault().Value);
+                    }
+                    else
+                        compiledResults.Add(test, true);
+                }
+                var testCaseCount = compiledResults.Count();
+                var falseCount = compiledResults.Count(x => x.Value == false);
+                File.AppendAllLines(@"C:\Temp\Statistics.txt", new string[] { "Version:" + v + ", \tTotal Test Cases:" + testCaseCount + "\t, Failed Test Cases:" + falseCount });
+            }
+        }
+        #endregion
+
+
+        #region MySQL Versions New
+        public void GetTestCasesFromExtractedCSVs()
+        {
+            var directoryToSaveTestCases = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\";
+            var tagger = new MaxentTagger(taggerModelPath);
+            var files = Directory.GetFiles(@"C:\Temp\SEALab\NLP-Project\MySqlTests-NewVersions", "*Steps.csv");
+            var fileCount = 0.0;
+            foreach (var file in files)
+            {
+                var steps = new StringBuilder();
+                var taggedSteps = new StringBuilder();
+                var content = File.ReadAllLines(file);
+                var lastId = "";
+                var lineCount = 0.0;
+                foreach (var line in content)
+                {
+                    if (string.IsNullOrEmpty(line))
+                        continue;
+                    var temp = line.Split(',');
+                    int b56 = 0;
+                    if (temp.Length > 2 && int.TryParse(temp[1], out b56) && lastId != temp[1])
+                    {
+                        steps.Append(Environment.NewLine + Environment.NewLine + "Test Case ID: " + temp[1] + Environment.NewLine + Environment.NewLine);
+                        taggedSteps.Append(Environment.NewLine + Environment.NewLine + "Test Case ID: " + temp[1] + Environment.NewLine + Environment.NewLine);
+                    }
+                    else if (temp.Length == 1)
+                    {
+                        steps.Append(temp[0] + Environment.NewLine);
+                        var sentences = MaxentTagger.tokenizeText(new java.io.StringReader(temp[0])).toArray();
+                        foreach (ArrayList sentence in sentences)
+                        {
+                            var tagged = tagger.tagSentence(sentence).ToString();
+                            //ONLY FETCH NOUN AND VERB, DISCARD OTHERS
+                            taggedSteps.Append(FetchNounAndVerbsOnly(tagged.Substring(1, tagged.Length - 2)) + Environment.NewLine);
+                        }
+                    }
+                    if (temp.Length > 2)
+                    {
+                        var id = temp[1];
+                        lastId = id;
+                        var step = temp[2];
+                        steps.Append(step + Environment.NewLine);
+                        var sentences = MaxentTagger.tokenizeText(new java.io.StringReader(step)).toArray();
+                        foreach (ArrayList sentence in sentences)
+                        {
+                            var tagged = tagger.tagSentence(sentence).ToString();
+                            //ONLY FETCH NOUN AND VERB, DISCARD OTHERS
+                            taggedSteps.Append(FetchNounAndVerbsOnly(tagged.Substring(1, tagged.Length - 2)) + Environment.NewLine);
+                        }
+                    }
+                    Console.WriteLine("Progress: Line=" + ++lineCount / content.Length * 100 + ",\t File=" + fileCount / files.Length * 100);
+                }
+                fileCount++;
+                File.WriteAllText(directoryToSaveTestCases + @"mobile_" + Regex.Match(file, @"\d+").Value + "_Rapid.txt", steps.ToString());
+                File.WriteAllText(directoryToSaveTestCases + @"mobile_" + Regex.Match(file, @"\d+").Value + "_Rapid-tagged.txt", taggedSteps.ToString());
+            }
+        }
+
+
+
+
+
+
+
+
+
+        #region Compile Result
+        public void CompileResultsMySQL()
+        {
+            var versions = new int[] { 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29 };
+            foreach (var version in versions)
+            {
+                var content = File.ReadAllLines(@"C:\Temp\SEALab\NLP-Project\MySqlTests-NewVersions\version@@-steps.csv".Replace("@@", version.ToString()));
+                List<int> testIds = new List<int>();
+                foreach (var line in content)
+                {
+                    int temp = 0 ;
+                    if (!string.IsNullOrEmpty(line) && line.Split(',').Length > 1 && int.TryParse(line.Split(',')[1], out temp))
+                    {
+                        testIds.Add(Convert.ToInt32(line.Split(',')[1]));
+                    }
+                }
+
+                var resultContent = File.ReadAllLines(@"C:\Temp\SEALab\NLP-Project\MySqlTests-NewVersions\version@@-results.csv".Replace("@@", version.ToString()));
+                Dictionary<int, bool> testResult = new Dictionary<int, bool>();
+                foreach (var line in resultContent)
+                {
+                    var thisId = Convert.ToInt32(line.Split(',')[1]);
+                    var thisResult = line.Split(',')[2] == "passed" ? true : false;
+                    if (!testResult.Any(x => x.Key == thisId))
+                    {
+                        testResult.Add(thisId, thisResult);
+                    }
+                    else
+                    {
+                        var oldResult = testResult.FirstOrDefault(x => x.Key == thisId).Value;
+                        testResult[thisId] = oldResult & thisResult;
+                    }
+                }
+                File.WriteAllLines(@"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\mobile_" + version + "_Result.txt", testResult.Select(x => "[" + x.Key + " " + x.Value + "]").ToArray());
+
+            }
+        }
+        #endregion
+        #region Verify Results
+        public void FetchExtractedTestIDsGetWholeResultsMySQL()
+        {
+            var versions = new int[] { 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29 };
+            foreach (var v in versions)
+            {
+                var tests = File.ReadAllLines(@"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\mobile_@@_Rapid-Tagged.txt".Replace("@@", v.ToString()));
+                var results = File.ReadAllLines(@"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\mobile_" + v + "_Result.txt");
+                var r = new Dictionary<int, bool>();
+                List<int> t = new List<int>();
+                var compiledResults = new Dictionary<int, bool>();
+                foreach (var line in tests.Where(x => x.Contains("Test Case ID: ")))
+                {
+                    t.Add(Convert.ToInt32(line.Substring(line.IndexOf("ID:") + 3)));
+                }
+                foreach (var line in results)
+                {
+                    var temp = line.Replace("[", "").Replace("]", "").Split(' ');
+                    r.Add(Convert.ToInt32(temp[0]), Convert.ToBoolean(temp[1]));
+                }
+                foreach (var test in t)
+                {
+                    if (r.Any(x => x.Key == test))
+                    {
+                        var temp = r.Where(x => x.Key == test);
+                        compiledResults.Add(temp.FirstOrDefault().Key, temp.FirstOrDefault().Value);
+                    }
+                }
+                var testCaseCount = compiledResults.Count();
+                var falseCount = compiledResults.Count(x => x.Value == false);
+                File.AppendAllLines(@"C:\Temp\Mobile_Statistics.txt", new string[] { "Version:" + v + ", \tTotal Test Cases:" + testCaseCount + "\t, Failed Test Cases:" + falseCount });
+            }
+        }
+        #endregion
+
+
+
+
+
+
+
+
+
+        public void MakeNounVerbPairsForMySQL(bool interactive)
+        {
+            var versions = new int[] { 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29 };
+            var genericFileNameToAbstract = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\mobile_@@_Rapid-tagged.txt";
+            foreach (var v in versions)
+            {
+                string[] verbTags = { "VV", "VB", "VBD", "VBG", "VBN", "VBP", "VBZ" };
+                var contents = File.ReadAllText(genericFileNameToAbstract.Replace("@@", v.ToString()));
+                var finalString = new StringBuilder();
+                int currentTestCaseID = -1;
+                var allPairs = new List<string>();
+                var testCase_NounVerbPair = new List<KeyValuePair<int, List<string>>>();
+                var totalLines = contents.Split(new string[] { "\n" }, StringSplitOptions.RemoveEmptyEntries).Count();
+                var passedLines = 0;
+                foreach (var line in contents.Split(new string[] { "\n" }, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    var currentTestCaseHeader = "";
+                    //IF line is not starting of a test case
+                    if (!line.Contains("Test Case ID: "))
+                    {
+                        //stepLevel++;
+                        string previousTag = "";
+                        string previousWord = "";
+                        bool firstWord = true;
+                        foreach (var taggedWord in line.Split(new String[] { " " }, StringSplitOptions.RemoveEmptyEntries).Where(x => x.Contains('/')))
+                        {
+                            string currentWord = taggedWord.Split('/')[0];
+                            string currentTag = taggedWord.Split('/')[1];
+                            //IF this word is a verb, then store the word as previous word (to be used as the first word in a pair)
+                            if (verbTags.Contains(currentTag) || firstWord)
+                            {
+                                previousTag = currentTag;
+                                previousWord = currentWord;
+                                firstWord = false;
+                            }
+                            else
+                            {
+                                //ELSE it can only be a noun, so make a pair using the previous word, and add it in the list AllPairs and finalString
+                                //AND also store it in the matrix (KeyValue pair of (testcase,List of pairs))
+                                if (!string.IsNullOrEmpty(previousWord))
+                                {
+                                    var pair = "" + previousWord.ToLower() + "," + currentWord.ToLower() /*+ stepLevel*/;
+                                    allPairs.Add(pair);
+                                    finalString.Append(pair);
+                                    testCase_NounVerbPair.FirstOrDefault(x => x.Key == currentTestCaseID).Value.Add(pair);
+                                }
+                            }
+                        }
+                    }
+                    //IF line is starting of a test case, then store the current test case information
+                    else
+                    {
+                        var temp = line.Split(new String[] { ": " }, StringSplitOptions.RemoveEmptyEntries)[1].Split('~')[0];
+                        if (temp.Contains("."))
+                            currentTestCaseID = Convert.ToInt32(temp.Split('.')[0]);
+                        else
+                            currentTestCaseID = Convert.ToInt32(temp);
+                        testCase_NounVerbPair.Add(new KeyValuePair<int, List<string>>(currentTestCaseID, new List<string>()));
+                        currentTestCaseHeader = line;
+                        finalString.Append(currentTestCaseHeader + "\n");
+                    }
+                    finalString.Append("\n");
+                    passedLines++;
+                    if (interactive)
+                    {
+                        Console.Clear();
+                        Console.Out.WriteLine((float)passedLines / (float)totalLines * 100 + "%");
+                    }
+                }
+                List<string> distinctPairs = new List<string>();
+                distinctPairs.AddRange(allPairs.Distinct());
+                //Save the pairs and testcase IDs with pairs
+                WriteUniquePairsAndTestCasesWithPairsForMySQL(distinctPairs, testCase_NounVerbPair, null, v.ToString());
+            }
+        }
+        public void WriteUniquePairsAndTestCasesWithPairsForMySQL(List<string> uniquePairs, List<KeyValuePair<int, List<string>>> testId_pair, string fileName, string version)
+        {
+            var genericFileToSaveTestIdWithUniquePairs = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\mobile_@@_TestIdWithUniquePair.txt".Replace("@@", version);
+            var tests = File.ReadAllLines(@"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\mobile_@@_Rapid-Tagged.txt".Replace("@@", version.ToString()));
+            var results = File.ReadAllLines(@"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\mobile_@@_Result.txt".Replace(@"@@", version.ToString()));
+            var r = new Dictionary<int, bool>();
+            List<int> t = new List<int>();
+            var compiledResults = new Dictionary<int, bool>();
+            foreach (var line in results)
+            {
+                var temp = line.Replace("[", "").Replace("]", "").Split(' ');
+                r.Add(Convert.ToInt32(temp[0]), Convert.ToBoolean(temp[1]));
+            }
+            foreach (var line in tests.Where(x => x.Contains("Test Case ID: ")))
+            {
+                t.Add(Convert.ToInt32(line.Substring(line.IndexOf("ID:") + 3)));
+            }
+            foreach (var test in t)
+            {
+                if (r.Any(x => x.Key == test))
+                {
+                    var temp = r.Where(x => x.Key == test);
+                    compiledResults.Add(temp.FirstOrDefault().Key, temp.FirstOrDefault().Value);
                 }
             }
-            List<string> distinctPairs = new List<string>();
-            distinctPairs.AddRange(allPairs.Distinct());
-            //Save the pairs and testcase IDs with pairs
-            WriteUniquePairsAndTestCasesWithPairs(distinctPairs, testCase_NounVerbPair, null);
+            StringBuilder passedFileString = new StringBuilder();
+            foreach (var test in testId_pair)
+            {
+                var result = compiledResults.FirstOrDefault(x => x.Key == test.Key).Value;
+
+                passedFileString.Append(test.Key + "=" + (compiledResults.FirstOrDefault(x => x.Key == test.Key).Value ? "Passed" : "Failed"));
+                passedFileString.Append(Environment.NewLine);
+                passedFileString.Append(string.Join(Environment.NewLine, test.Value));
+                passedFileString.Append(Environment.NewLine);
+                passedFileString.Append(Environment.NewLine);
+            }
+            File.WriteAllText(genericFileToSaveTestIdWithUniquePairs, passedFileString.ToString());
         }
+
+        #endregion
+
+
+
+        #region NounVerbPairs
+        public void MakeNounVerbPairs(bool interactive)
+        {
+            var versions = new int[] { 10, 11, 12, 13, 30, 35, 36, 40, 50, 60, 70, 80, 90 };
+            var genericFileNameToAbstract = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_@@_Rapid-Tagged.txt";
+            foreach (var v in versions)
+            {
+                string[] verbTags = { "VV", "VB", "VBD", "VBG", "VBN", "VBP", "VBZ" };
+                var contents = File.ReadAllText(genericFileNameToAbstract.Replace("@@", v.ToString()));
+                var finalString = new StringBuilder();
+                int currentTestCaseID = -1;
+                var allPairs = new List<string>();
+                var testCase_NounVerbPair = new List<KeyValuePair<int, List<string>>>();
+                var totalLines = contents.Split(new string[] { "\n" }, StringSplitOptions.RemoveEmptyEntries).Count();
+                var passedLines = 0;
+                //Traversing through lines in tagged file
+                var stepLevel = 0;
+                foreach (var line in contents.Split(new string[] { "\n" }, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    var currentTestCaseHeader = "";
+                    //IF line is not starting of a test case
+                    if (!line.Contains("Test Case ID: "))
+                    {
+                        //stepLevel++;
+                        string previousTag = "";
+                        string previousWord = "";
+                        bool firstWord = true;
+                        foreach (var taggedWord in line.Split(new String[] { " " }, StringSplitOptions.RemoveEmptyEntries).Where(x => x.Contains('/')))
+                        {
+                            string currentWord = taggedWord.Split('/')[0];
+                            string currentTag = taggedWord.Split('/')[1];
+                            //IF this word is a verb, then store the word as previous word (to be used as the first word in a pair)
+                            if (verbTags.Contains(currentTag) || firstWord)
+                            {
+                                previousTag = currentTag;
+                                previousWord = currentWord;
+                                firstWord = false;
+                            }
+                            else
+                            {
+                                //ELSE it can only be a noun, so make a pair using the previous word, and add it in the list AllPairs and finalString
+                                //AND also store it in the matrix (KeyValue pair of (testcase,List of pairs))
+                                if (!string.IsNullOrEmpty(previousWord))
+                                {
+                                    var pair = "" + previousWord.ToLower() + "," + currentWord.ToLower() /*+ stepLevel*/;
+                                    allPairs.Add(pair);
+                                    finalString.Append(pair);
+                                    testCase_NounVerbPair.FirstOrDefault(x => x.Key == currentTestCaseID).Value.Add(pair);
+                                }
+                            }
+                        }
+                    }
+                    //IF line is starting of a test case, then store the current test case information
+                    else
+                    {
+                        var temp = line.Split(new String[] { ": " }, StringSplitOptions.RemoveEmptyEntries)[1].Split('~')[0];
+                        if (temp.Contains("."))
+                            currentTestCaseID = Convert.ToInt32(temp.Split('.')[0]);
+                        else
+                            currentTestCaseID = Convert.ToInt32(temp);
+                        testCase_NounVerbPair.Add(new KeyValuePair<int, List<string>>(currentTestCaseID, new List<string>()));
+                        currentTestCaseHeader = line;
+                        finalString.Append(currentTestCaseHeader + "\n");
+                        stepLevel = 0;
+                    }
+                    finalString.Append("\n");
+                    passedLines++;
+                    if (interactive)
+                    {
+                        Console.Clear();
+                        Console.Out.WriteLine((float)passedLines / (float)totalLines * 100 + "%");
+                    }
+                }
+                List<string> distinctPairs = new List<string>();
+                distinctPairs.AddRange(allPairs.Distinct());
+                //Save the pairs and testcase IDs with pairs
+                WriteUniquePairsAndTestCasesWithPairs(distinctPairs, testCase_NounVerbPair, null, v.ToString());
+            }
+        }
+
+
+
+
+        public void MakeNounOnly(bool interactive)
+        {
+            var versions = new int[] { 10, 11, 12, 13, 30, 35, 36, 40, 50, 60, 70, 80, 90 };
+            var genericFileNameToAbstract = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_@@_Rapid-Tagged.txt";
+            foreach (var v in versions)
+            {
+                string[] allowedTags = { "NN", "NNS", "NNP", "NNPS" };
+                //string[] verbTags = { "VV", "VB", "VBD", "VBG", "VBN", "VBP", "VBZ" };
+                var contents = File.ReadAllText(genericFileNameToAbstract.Replace("@@", v.ToString()));
+                var finalString = new StringBuilder();
+                int currentTestCaseID = -1;
+                var allNouns = new List<string>();
+                var testCase_NounOnly = new List<KeyValuePair<int, List<string>>>();
+                var totalLines = contents.Split(new string[] { "\n" }, StringSplitOptions.RemoveEmptyEntries).Count();
+                var passedLines = 0;
+                //Traversing through lines in tagged file
+                var stepLevel = 0;
+                foreach (var line in contents.Split(new string[] { "\n" }, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    var currentTestCaseHeader = "";
+                    //IF line is not starting of a test case
+                    if (!line.Contains("Test Case ID: "))
+                    {
+                        //stepLevel++;
+                        string previousTag = "";
+                        string previousWord = "";
+                        bool firstWord = true;
+                        foreach (var taggedWord in line.Split(new String[] { " " }, StringSplitOptions.RemoveEmptyEntries).Where(x => x.Contains('/')))
+                        {
+                            string currentWord = taggedWord.Split('/')[0];
+                            string currentTag = taggedWord.Split('/')[1];
+                            //IF this word is a verb, then store the word as previous word (to be used as the first word in a pair)
+                            if (allowedTags.Contains(currentTag) || firstWord)
+                            {
+                                previousTag = currentTag;
+                                previousWord = currentWord;
+                                firstWord = false;
+                                allNouns.Add(currentWord);
+                                finalString.Append(currentWord);
+                                testCase_NounOnly.FirstOrDefault(x => x.Key == currentTestCaseID).Value.Add(currentWord);
+                            }
+                        }
+                    }
+                    //IF line is starting of a test case, then store the current test case information
+                    else
+                    {
+                        var temp = line.Split(new String[] { ": " }, StringSplitOptions.RemoveEmptyEntries)[1].Split('~')[0];
+                        if (temp.Contains("."))
+                            currentTestCaseID = Convert.ToInt32(temp.Split('.')[0]);
+                        else
+                            currentTestCaseID = Convert.ToInt32(temp);
+                        testCase_NounOnly.Add(new KeyValuePair<int, List<string>>(currentTestCaseID, new List<string>()));
+                        currentTestCaseHeader = line;
+                        finalString.Append(currentTestCaseHeader + "\n");
+                        stepLevel = 0;
+                    }
+                    finalString.Append("\n");
+                    passedLines++;
+                    if (interactive)
+                    {
+                        Console.Clear();
+                        Console.Out.WriteLine((float)passedLines / (float)totalLines * 100 + "%");
+                    }
+                }
+                List<string> distinctPairs = new List<string>();
+                distinctPairs.AddRange(allNouns.Distinct());
+                //Save the pairs and testcase IDs with pairs
+                WriteUniquePairsAndTestCasesWithNounsOnly(distinctPairs, testCase_NounOnly, null, v.ToString());
+            }
+        }
+
+
+
+
+
+
+
         public void MakeNounVerbPairsForExcel(bool interactive)
         {
             string[] verbTags = { "VV", "VB", "VBD", "VBG", "VBN", "VBP", "VBZ" };
             var files = Directory.GetFiles(directoryForExtractedTestCases).Where(x => x.Contains("Tagged"));
             var fileCount = 0;
+            var stepLevel = 0;
             foreach (var file in files)
             {
                 fileCount++;
@@ -606,6 +1219,7 @@ namespace ExtractingTestCases
                     //IF line is not starting of a test case
                     if (!line.Contains("Test Case ID: "))
                     {
+                        stepLevel++;
                         string previousTag = "";
                         string previousWord = "";
                         foreach (var taggedWord in line.Split(new String[] { " " }, StringSplitOptions.RemoveEmptyEntries).Where(x => x.Contains('/')))
@@ -624,7 +1238,7 @@ namespace ExtractingTestCases
                                 //AND also store it in the matrix (KeyValue pair of (testcase,List of pairs))
                                 if (!string.IsNullOrEmpty(previousWord))
                                 {
-                                    var pair = "(" + previousWord.ToLower() + "_" + currentWord.ToLower() + ")";
+                                    var pair = "(" + previousWord.ToLower() + "_" + currentWord.ToLower() + stepLevel + ")";
                                     allPairs.Add(pair);
                                     finalString.Append(pair);
                                     testCase_NounVerbPair.FirstOrDefault(x => x.Key == currentTestCaseID).Value.Add(pair);
@@ -648,6 +1262,7 @@ namespace ExtractingTestCases
                         testCase_NounVerbPair.Add(new KeyValuePair<int, List<string>>(currentTestCaseID, new List<string>()));
                         currentTestCaseHeader = line;
                         finalString.Append(currentTestCaseHeader + "\n");
+                        stepLevel = 0;
                     }
                     finalString.Append("\n");
                     passedLines++;
@@ -660,26 +1275,91 @@ namespace ExtractingTestCases
                 List<string> distinctPairs = new List<string>();
                 distinctPairs.AddRange(allPairs.Distinct());
                 //Save the pairs and testcase IDs with pairs
-                WriteUniquePairsAndTestCasesWithPairs(distinctPairs, testCase_NounVerbPair, file);
+                WriteUniquePairsAndTestCasesWithPairs(distinctPairs, testCase_NounVerbPair, file, "");
             }
         }
-        public void WriteUniquePairsAndTestCasesWithPairs(List<string> uniquePairs, List<KeyValuePair<int, List<string>>> testId_pair, string fileName)
+        public void WriteUniquePairsAndTestCasesWithPairs(List<string> uniquePairs, List<KeyValuePair<int, List<string>>> testId_pair, string fileName, string version)
         {
-            if (string.IsNullOrEmpty(fileName))
-                File.WriteAllText(fileToSaveUniquePairs, string.Join(",", uniquePairs));
-            else
-                File.WriteAllText(fileName.Substring(0, fileName.LastIndexOf(".")) + "_UniquePairs.txt", string.Join(",", uniquePairs));
-            StringBuilder fileString = new StringBuilder();
+            var genericFileName = @"C:\Temp\SEALab\NLP-Project\Litmuss\litmus_@@\TestResults.txt".Replace("@@", version);
+            var genericFileToSaveTestIdWithUniquePairs = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_@@_TestIdWithUniquePair.txt".Replace("@@", version);
+            var tests = File.ReadAllLines(@"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_@@_Rapid-Tagged.txt".Replace("@@", version.ToString()));
+            var results = File.ReadAllLines(@"C:\Temp\Result_@@.txt".Replace(@"@@", version.ToString()));
+            var r = new Dictionary<int, bool>();
+            List<int> t = new List<int>();
+            var compiledResults = new Dictionary<int, bool>();
+            foreach (var line in results)
+            {
+                var temp = line.Replace("[", "").Replace("]", "").Split(' ');
+                r.Add(Convert.ToInt32(temp[0]), Convert.ToBoolean(temp[1]));
+            }
+            foreach (var line in tests.Where(x => x.Contains("Test Case ID: ")))
+            {
+                t.Add(Convert.ToInt32(line.Substring(line.IndexOf("id=") + 3)));
+            }
+            foreach (var test in t)
+            {
+                if (r.Any(x => x.Key == test))
+                {
+                    var temp = r.Where(x => x.Key == test);
+                    compiledResults.Add(temp.FirstOrDefault().Key, temp.FirstOrDefault().Value);
+                }
+                else
+                    compiledResults.Add(test, true);
+            }
+            StringBuilder passedFileString = new StringBuilder();
             foreach (var test in testId_pair)
             {
-                fileString.Append("id=" + test.Key + "\n");
-                fileString.Append(string.Join(",", test.Value));
-                fileString.Append("\n");
+                var result = compiledResults.FirstOrDefault(x => x.Key == test.Key).Value;
+
+                passedFileString.Append(test.Key + "=" + (compiledResults.FirstOrDefault(x => x.Key == test.Key).Value ? "Passed" : "Failed"));
+                passedFileString.Append(Environment.NewLine);
+                passedFileString.Append(string.Join(Environment.NewLine, test.Value));
+                passedFileString.Append(Environment.NewLine);
+                passedFileString.Append(Environment.NewLine);
             }
-            if (string.IsNullOrEmpty(fileName))
-                File.WriteAllText(fileToSaveTestIdWithUniquePairs, fileString.ToString());
-            else
-                File.WriteAllText(fileName.Substring(0, fileName.LastIndexOf(".")) + "_Pairs.txt", fileString.ToString());
+            File.WriteAllText(genericFileToSaveTestIdWithUniquePairs, passedFileString.ToString());
+        }
+
+        public void WriteUniquePairsAndTestCasesWithNounsOnly(List<string> uniqueNouns, List<KeyValuePair<int, List<string>>> testId_nouns, string fileName, string version)
+        {
+            var genericFileName = @"C:\Temp\SEALab\NLP-Project\Litmuss\litmus_@@\TestResults.txt".Replace("@@", version);
+            var genericFileToSaveTestIdWithUniquePairs = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_@@_TestIdWithNouns.txt".Replace("@@", version);
+            var tests = File.ReadAllLines(@"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_@@_Rapid-Tagged.txt".Replace("@@", version.ToString()));
+            var results = File.ReadAllLines(@"C:\Temp\Result_@@.txt".Replace(@"@@", version.ToString()));
+            var r = new Dictionary<int, bool>();
+            List<int> t = new List<int>();
+            var compiledResults = new Dictionary<int, bool>();
+            foreach (var line in results)
+            {
+                var temp = line.Replace("[", "").Replace("]", "").Split(' ');
+                r.Add(Convert.ToInt32(temp[0]), Convert.ToBoolean(temp[1]));
+            }
+            foreach (var line in tests.Where(x => x.Contains("Test Case ID: ")))
+            {
+                t.Add(Convert.ToInt32(line.Substring(line.IndexOf("id=") + 3)));
+            }
+            foreach (var test in t)
+            {
+                if (r.Any(x => x.Key == test))
+                {
+                    var temp = r.Where(x => x.Key == test);
+                    compiledResults.Add(temp.FirstOrDefault().Key, temp.FirstOrDefault().Value);
+                }
+                else
+                    compiledResults.Add(test, true);
+            }
+            StringBuilder passedFileString = new StringBuilder();
+            foreach (var test in testId_nouns)
+            {
+                var result = compiledResults.FirstOrDefault(x => x.Key == test.Key).Value;
+
+                passedFileString.Append(test.Key + "=" + (compiledResults.FirstOrDefault(x => x.Key == test.Key).Value ? "Passed" : "Failed"));
+                passedFileString.Append(Environment.NewLine);
+                passedFileString.Append(string.Join(Environment.NewLine, test.Value));
+                passedFileString.Append(Environment.NewLine);
+                passedFileString.Append(Environment.NewLine);
+            }
+            File.WriteAllText(genericFileToSaveTestIdWithUniquePairs, passedFileString.ToString());
         }
         public void ReadUniquePairsAndTestCasesWithPairs(out List<string> uniquePairs, out List<KeyValuePair<int, List<string>>> testId_pair, string path)
         {
@@ -796,18 +1476,23 @@ namespace ExtractingTestCases
 
             var faults = testResults.Where(x => x.Value == false);
 
+            var folder = fileToSaveResultForCharts.Substring(0, fileToSaveResultForCharts.LastIndexOf("\\")) + NAPFDConstant.ToString("N2").Replace(".", "");
+            if (!Directory.Exists(folder))
+                Directory.CreateDirectory(folder);
+            var fileToSave = folder + "\\" + fileToSaveResultForCharts.Substring(fileToSaveResultForCharts.LastIndexOf("\\") + 1);
 
-            File.WriteAllText(fileToSaveResultForCharts, "INITIATING ....................................\n\n");
+            //File.WriteAllText(fileToSaveResultForCharts, "INITIATING ....................................\n\n");
+            File.WriteAllText(fileToSave, "INITIATING ....................................\n\n");
             for (var indexForRandomizingResult = 0; indexForRandomizingResult < 100; indexForRandomizingResult++)
-                FindMetrics(80, indexForRandomizingResult, sortedTestId_countOfPair, testId_pair, uniquePairs, testResults, totalFaults, originalOrder, "");
+                FindMetrics(80, indexForRandomizingResult, sortedTestId_countOfPair, testId_pair, uniquePairs, testResults, totalFaults, originalOrder, fileToSave);
 
 
 
             //System.Diagnostics.Process.Start(fileToSaveResultForCharts);
-            ProcessStartInfo pi = new ProcessStartInfo(fileToSaveResultForCharts);
-            pi.Arguments = Path.GetFileName(fileToSaveResultForCharts);
+            ProcessStartInfo pi = new ProcessStartInfo(fileToSave);
+            pi.Arguments = Path.GetFileName(fileToSave);
             pi.UseShellExecute = true;
-            pi.WorkingDirectory = Path.GetDirectoryName(fileToSaveResultForCharts);
+            pi.WorkingDirectory = Path.GetDirectoryName(fileToSave);
             pi.FileName = @"C:\Program Files (x86)\Notepad++\\notepad++.exe";
             pi.Verb = "OPEN";
             Process.Start(pi);
@@ -861,7 +1546,7 @@ namespace ExtractingTestCases
                 //extracting the results of the test cases of this litmus
                 /******************************IMPORTANT*******************************/
                 /********Go to the result file, and replace § character with ~*********/
-                
+
                 var totalFaults = 0;
                 List<KeyValuePair<int, bool>> testResults = new List<KeyValuePair<int, bool>>();
                 var currentFile = file.Substring(file.LastIndexOf("\\") + 1).Replace("Tagged", "").Split('~');
@@ -880,10 +1565,11 @@ namespace ExtractingTestCases
 
                 var faults = testResults.Where(x => x.Value == false);
 
-                var fileToSaveResultsTo = file.Substring(0, file.LastIndexOf("\\") + 1) + "Results\\NAPFD\\" + file.Substring(file.LastIndexOf("\\") + 1, file.LastIndexOf("_") - 1 - file.LastIndexOf("\\")).Replace("Tagged", "") + ".txt";
-
+                var fileToSaveResultsTo = file.Substring(0, file.LastIndexOf("\\") + 1) + "Results\\APFD" + NAPFDConstant.ToString("N2").Replace(".", "") + "\\" + file.Substring(file.LastIndexOf("\\") + 1, file.LastIndexOf("_") - 1 - file.LastIndexOf("\\")).Replace("Tagged", "") + ".txt";
+                if (!Directory.Exists(file.Substring(0, file.LastIndexOf("\\") + 1) + "Results\\APFD" + NAPFDConstant.ToString("N2").Replace(".", "")))
+                    Directory.CreateDirectory(file.Substring(0, file.LastIndexOf("\\") + 1) + "Results\\APFD" + NAPFDConstant.ToString("N2").Replace(".", ""));
                 File.WriteAllText(fileToSaveResultsTo, "INITIATING ....................................\n\n");
-                for (var indexForRandomizingResult = 0; indexForRandomizingResult < 100; indexForRandomizingResult++)
+                for (var indexForRandomizingResult = 0; indexForRandomizingResult < 10; indexForRandomizingResult++)
                     FindMetrics(80, indexForRandomizingResult, sortedTestId_countOfPair, testId_pair, uniquePairs, testResults, totalFaults, originalOrder, fileToSaveResultsTo);
 
 
@@ -938,7 +1624,7 @@ namespace ExtractingTestCases
                 //removing the covered pair so that it doesnt get covered again
                 uncoveredPairs.Remove(pairNowCovering);
                 if (uncoveredPairs.Count > 0)
-                    Console.Out.WriteLine("Ordering Progress: " + (float)i / totalPairCounts * 100 + "%");
+                    Console.Out.WriteLine("Ordering Progress: " + (float)i / totalPairCounts * 100 + "%. " + "NAPFD Constant = " + NAPFDConstant.ToString() + ". Iteration = " + indexForRandomizingResult);
             }
 
 
@@ -973,28 +1659,42 @@ namespace ExtractingTestCases
             var loope = 0;
             var faultsDetected = 0.0;
             Dictionary<float, float> faultDetectedPercentage = new Dictionary<float, float>();
-            foreach (var rank in MyRank)
+            //foreach (var rank in MyRank)
+            //{
+            //    loope++;
+            //    if (testResults.Any(x => x.Key == rank && x.Value == false))
+            //    {
+            //        faultsDetected++;
+            //        indexDetectingFault += loope;
+            //        myAPFD = NAPFDConstant - ((float)indexDetectingFault / (float)(totalFaults * MyRank.Count)) + (float)(NAPFDConstant / (float)(2 * MyRank.Count));
+            //        faultDetectedPercentage.Add((float)loope / MyRank.Count * 100, (float)faultsDetected / totalFaults);
+            //    }
+            //    Console.Out.WriteLine((float)loope / MyRank.Count * 100 + "%: " + (float)faultsDetected / totalFaults);
+            //}
+
+            var faultCount = testResults.Count(x => x.Value == false);
+            foreach (var f in testResults.Where(x => x.Value == false))
             {
-                loope++;
-                if (testResults.Any(x => x.Key == rank && x.Value == false))
-                {
-                    faultsDetected++;
-                    indexDetectingFault += loope;
-                    myAPFD = NAPFDConstant - ((float)indexDetectingFault / (float)(totalFaults * MyRank.Count)) + (float)(NAPFDConstant / (float)(2 * MyRank.Count));
-                    faultDetectedPercentage.Add((float)loope / MyRank.Count * 100, (float)faultsDetected / totalFaults);
-                }
-                Console.Out.WriteLine((float)loope / MyRank.Count * 100 + "%: " + (float)faultsDetected / totalFaults);
+                faultsDetected++;
+                indexDetectingFault += MyRank.IndexOf(f.Key) + 1;
+                myAPFD = NAPFDConstant - ((float)indexDetectingFault / (float)(totalFaults * MyRank.Count)) + (float)(NAPFDConstant / (float)(2 * MyRank.Count));
+                //faultDetectedPercentage.Add((float)faultsDetected / MyRank.Count * 100, (float)faultsDetected / totalFaults);
+                Console.Out.WriteLine((float)faultsDetected / faultCount * 100 + "%: " + (float)faultsDetected / totalFaults);
+                if (faultsDetected / faultCount > NAPFDConstant)
+                    break;
             }
+
 
             if (string.IsNullOrEmpty(fileToSave))
             {
-                File.AppendAllText(fileToSaveResultForCharts, "PAIR METHOD APFD = " + myAPFD + ";");
-                File.AppendAllText(fileToSaveResultForCharts, "\t\t\t" + string.Join(",", faultDetectedPercentage) + "\n");
+                File.AppendAllText(fileToSaveResultForCharts, "PAIR METHOD APFD = " + myAPFD + ";\n");
+                //File.AppendAllText(fileToSaveResultForCharts, "\t\t\t" + string.Join(",", faultDetectedPercentage) + "\n");
+                File.AppendAllText(fileToSaveResultForCharts, "\r\n");
             }
             else
             {
-                File.AppendAllText(fileToSave, "PAIR METHOD APFD = " + myAPFD + ";");
-                File.AppendAllText(fileToSave, "\t\t\t" + string.Join(",", faultDetectedPercentage) + "\n");
+                File.AppendAllText(fileToSave, "PAIR METHOD APFD = " + myAPFD + ";\n");
+                //File.AppendAllText(fileToSave, "\t\t\t" + string.Join(",", faultDetectedPercentage) + "\n");
             }
 
             //indexDetectingFault = 0;
@@ -1020,27 +1720,37 @@ namespace ExtractingTestCases
             faultsDetected = 0.0;
             faultDetectedPercentage = new Dictionary<float, float>();
             var randomAPFD = 0.0;
-            foreach (var rank in randomRanking)
+            //foreach (var rank in randomRanking)
+            //{
+            //    loope++;
+            //    if (testResults.Any(x => x.Key == rank && x.Value == false))
+            //    {
+            //        faultsDetected++;
+            //        indexDetectingFault += loope;
+            //        randomAPFD = NAPFDConstant - ((float)indexDetectingFault / (float)(totalFaults * randomRanking.Count)) + (float)(NAPFDConstant / (float)(2 * randomRanking.Count));
+            //        faultDetectedPercentage.Add((float)loope / randomRanking.Count * 100, (float)faultsDetected / totalFaults);
+            //    }
+            //    Console.Out.WriteLine((float)loope / randomRanking.Count * 100 + "%: " + (float)faultsDetected / totalFaults);
+            //}
+            foreach (var f in testResults.Where(x => x.Value == false))
             {
-                loope++;
-                if (testResults.Any(x => x.Key == rank && x.Value == false))
-                {
-                    faultsDetected++;
-                    indexDetectingFault += loope;
-                    randomAPFD = NAPFDConstant - ((float)indexDetectingFault / (float)(totalFaults * randomRanking.Count)) + (float)(NAPFDConstant / (float)(2 * randomRanking.Count));
-                    faultDetectedPercentage.Add((float)loope / randomRanking.Count * 100, (float)faultsDetected / totalFaults);
-                }
-                Console.Out.WriteLine((float)loope / randomRanking.Count * 100 + "%: " + (float)faultsDetected / totalFaults);
+                faultsDetected++;
+                indexDetectingFault += randomRanking.IndexOf(f.Key) + 1;
+                randomAPFD = NAPFDConstant - ((float)indexDetectingFault / (float)(totalFaults * randomRanking.Count)) + (float)(NAPFDConstant / (float)(2 * randomRanking.Count));
+                //faultDetectedPercentage.Add((float)faultsDetected / MyRank.Count * 100, (float)faultsDetected / totalFaults);
+                Console.Out.WriteLine((float)faultsDetected / faultCount * 100 + "%: " + (float)faultsDetected / totalFaults);
+                if (faultsDetected / faultCount > NAPFDConstant)
+                    break;
             }
             if (string.IsNullOrEmpty(fileToSave))
             {
-                File.AppendAllText(fileToSaveResultForCharts, "RANDOM METHOD APFD = " + randomAPFD + ";");
-                File.AppendAllText(fileToSaveResultForCharts, "\t\t\t" + string.Join(",", faultDetectedPercentage) + "\n");
+                File.AppendAllText(fileToSaveResultForCharts, "RANDOM METHOD APFD = " + randomAPFD + ";\n");
+                //File.AppendAllText(fileToSaveResultForCharts, "\t\t\t" + string.Join(",", faultDetectedPercentage) + "\n");
             }
             else
             {
-                File.AppendAllText(fileToSave, "RANDOM METHOD APFD = " + randomAPFD + ";");
-                File.AppendAllText(fileToSave, "\t\t\t" + string.Join(",", faultDetectedPercentage) + "\n");
+                File.AppendAllText(fileToSave, "RANDOM METHOD APFD = " + randomAPFD + ";\n");
+                //File.AppendAllText(fileToSave, "\t\t\t" + string.Join(",", faultDetectedPercentage) + "\n");
             }
             ///////////////////////////PERCENTAGE OF FAULTS FOUND/////////////////////////////
             #endregion
@@ -1051,6 +1761,224 @@ namespace ExtractingTestCases
 
 
 
+
+
+
+
+
+
+        public void ProcessAllPairsInALitmus()
+        {
+            //var versions = new int[] { 10, 11, 12, 13, 30, 35, 36, 40, 50, 60, 70, 80, 90 };
+            var versions = new int[] { 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29 };
+            var countVersionsProcessed = 0.0;
+            var folderNameToSaveAllPairFile = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\CPC\MobilePairs\";
+            Dictionary<string, int> indexedPairs = new Dictionary<string, int>();
+            var index = 0;
+            foreach (var v in versions)
+            {
+                var genericFileNameToReadLitmusFile = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\mobile_@@_TestIdWithUniquePair.txt".Replace("@@", v.ToString());
+                var content = File.ReadAllLines(genericFileNameToReadLitmusFile);
+                var countLinesProcessed = 0.0;
+                foreach (var line in content)
+                {
+                    if (!line.Contains("=Passed") && !line.Contains("=Failed") && !string.IsNullOrEmpty(line))
+                    {
+                        if (!indexedPairs.Any(x => x.Key == line.Trim()))
+                        {
+                            indexedPairs.Add(line.Trim(), ++index);
+                        }
+                    }
+                    Console.WriteLine("Progress: Lines Processed=" + countLinesProcessed++ / content.Length * 100 + "%;\tVersions Processed=" + countVersionsProcessed / versions.Length * 100 + "%");
+
+                }
+
+                countVersionsProcessed++;
+            }
+            File.WriteAllLines(folderNameToSaveAllPairFile + @"AllPairsIndexed.txt", indexedPairs.Select(x => x.Value + " " + x.Key).ToArray());
+        }
+
+        public void IndexAllPairsInLitmus()
+        {
+            var indicesWithPairs = File.ReadAllLines(@"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\CPC\MobilePairs\AllPairsIndexed.txt");
+            Dictionary<string, int> indexedPairs = new Dictionary<string, int>();
+            foreach (var line in indicesWithPairs)
+            {
+                if (!string.IsNullOrEmpty(line))
+                {
+                    var temp = line.Split(' ');
+                    indexedPairs.Add(temp[1], Convert.ToInt32(temp[0]));
+                }
+            }
+            //var versions = new int[] { 10, 11, 12, 13, 30, 35, 36, 40, 50, 60, 70, 80, 90 };
+            var versions = new int[] { 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29 };
+            var countVersionsProcessed = 0.0;
+            foreach (var v in versions)
+            {
+                var genericFileNameToReadLitmusFile = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\mobile_@@_TestIdWithUniquePair.txt".Replace("@@", v.ToString());
+                var genericFolderNameToSaveIndexPairFiles = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\CPC\MobilePairs\@@\".Replace("@@", v.ToString());
+                var content = File.ReadAllLines(genericFileNameToReadLitmusFile);
+                string lastTestHeader = "";
+                string lastTestCaseIndexed = "";
+                if (!Directory.Exists(genericFolderNameToSaveIndexPairFiles))
+                    Directory.CreateDirectory(genericFolderNameToSaveIndexPairFiles);
+                var countLinesProcessed = 0.0;
+                foreach (var line in content)
+                {
+                    if (!line.Contains("=Passed") && !line.Contains("=Failed") && !string.IsNullOrEmpty(line))
+                    {
+                        lastTestCaseIndexed += indexedPairs[line.ToLower().Trim()] + " ";
+                    }
+                    else
+                    {
+                        if (!string.IsNullOrEmpty(lastTestHeader) && !string.IsNullOrEmpty(lastTestCaseIndexed.Trim()))
+                            File.WriteAllText(genericFolderNameToSaveIndexPairFiles + @"\" + lastTestHeader + ".txt", lastTestCaseIndexed.Trim());
+                        lastTestHeader = line;
+                        lastTestCaseIndexed = "";
+                    }
+                    Console.WriteLine("Progress: Lines Processed=" + countLinesProcessed++ / content.Length * 100 + "%;\tVersions Processed=" + countVersionsProcessed / versions.Length * 100 + "%");
+
+                }
+
+                countVersionsProcessed++;
+            }
+        }
+
+
+
+
+
+
+
+        public void ProcessAllNounsInALitmus()
+        {
+            var versions = new int[] { 10, 11, 12, 13, 30, 35, 36, 40, 50, 60, 70, 80, 90 };
+            var countVersionsProcessed = 0.0;
+            var folderNameToSaveAllNounFile = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\CPC\Nouns\";
+            Dictionary<string, int> indexedNouns = new Dictionary<string, int>();
+            var index = 0;
+            foreach (var v in versions)
+            {
+                var genericFileNameToReadLitmusFile = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_@@_TestIdWithNouns.txt".Replace("@@", v.ToString());
+                var genericFolderNameToSaveIndexNounFiles = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\CPC\Nouns\@@\".Replace("@@", v.ToString());
+                var content = File.ReadAllLines(genericFileNameToReadLitmusFile);
+                if (!Directory.Exists(genericFolderNameToSaveIndexNounFiles))
+                    Directory.CreateDirectory(genericFolderNameToSaveIndexNounFiles);
+                var countLinesProcessed = 0.0;
+                foreach (var line in content)
+                {
+                    if (!line.Contains("=Passed") && !line.Contains("=Failed") && !string.IsNullOrEmpty(line))
+                    {
+                        if (!indexedNouns.Any(x => x.Key == line.Trim()))
+                        {
+                            indexedNouns.Add(line.Trim(), ++index);
+                            //lastTestCaseIndexed += index + " ";
+                        }
+                    }
+                    Console.WriteLine("Progress: Lines Processed=" + countLinesProcessed++ / content.Length * 100 + "%;\tVersions Processed=" + countVersionsProcessed / versions.Length * 100 + "%");
+
+                }
+
+                countVersionsProcessed++;
+            }
+            File.WriteAllLines(folderNameToSaveAllNounFile + @"AllNounsIndexed.txt", indexedNouns.Select(x => x.Value + " " + x.Key).ToArray());
+        }
+
+        public void IndexAllNounsInLitmus()
+        {
+            var indicesWithNouns = File.ReadAllLines(@"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\CPC\Nouns\AllNounsIndexed.txt");
+            Dictionary<string, int> indexedNouns = new Dictionary<string, int>();
+            foreach (var line in indicesWithNouns)
+            {
+                if (!string.IsNullOrEmpty(line))
+                {
+                    var temp = line.Split(' ');
+                    indexedNouns.Add(temp[1], Convert.ToInt32(temp[0]));
+                }
+            }
+            var versions = new int[] { 10, 11, 12, 13, 30, 35, 36, 40, 50, 60, 70, 80, 90 };
+            var countVersionsProcessed = 0.0;
+            foreach (var v in versions)
+            {
+                var genericFileNameToReadLitmusFile = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_@@_TestIdWithNouns.txt".Replace("@@", v.ToString());
+                var genericFolderNameToSaveIndexNounFiles = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\CPC\Nouns\@@\".Replace("@@", v.ToString());
+                var content = File.ReadAllLines(genericFileNameToReadLitmusFile);
+                string lastTestHeader = "";
+                string lastTestCaseIndexed = "";
+                if (!Directory.Exists(genericFolderNameToSaveIndexNounFiles))
+                    Directory.CreateDirectory(genericFolderNameToSaveIndexNounFiles);
+                var countLinesProcessed = 0.0;
+                foreach (var line in content)
+                {
+                    if (!line.Contains("=Passed") && !line.Contains("=Failed") && !string.IsNullOrEmpty(line))
+                    {
+                        lastTestCaseIndexed += indexedNouns[line.Trim()] + " ";
+                    }
+                    else
+                    {
+                        if (!string.IsNullOrEmpty(lastTestHeader) && !string.IsNullOrEmpty(lastTestCaseIndexed.Trim()))
+                            File.WriteAllText(genericFolderNameToSaveIndexNounFiles + @"\" + lastTestHeader + ".txt", lastTestCaseIndexed.Trim());
+                        lastTestHeader = line;
+                        lastTestCaseIndexed = "";
+                    }
+                    Console.WriteLine("Progress: Lines Processed=" + countLinesProcessed++ / content.Length * 100 + "%;\tVersions Processed=" + countVersionsProcessed / versions.Length * 100 + "%");
+
+                }
+
+                countVersionsProcessed++;
+            }
+        }
+
+
+
+
+
+
+
+        //public void ProcessAllNounsInALitmus()
+        //{
+        //    var versions = new int[] { 10, 11, 12, 13, 30, 35, 36, 40, 50, 60, 70, 80, 90 };
+        //    var countVersionsProcessed = 0.0;
+        //    foreach (var v in versions)
+        //    {
+        //        Dictionary<string, int> indexedNouns = new Dictionary<string, int>();
+        //        var genericFileNameToReadLitmusFile = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\litmus_@@_TestIdWithNouns.txt".Replace("@@", v.ToString());
+        //        var genericFolderNameToSaveIndexNounFiles = @"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\CPC\Nouns\@@\".Replace("@@", v.ToString());
+        //        var content = File.ReadAllLines(genericFileNameToReadLitmusFile);
+        //        var index = 0;
+        //        string lastTestHeader = "";
+        //        string lastTestCaseIndexed = "";
+        //        if (!Directory.Exists(genericFolderNameToSaveIndexNounFiles))
+        //            Directory.CreateDirectory(genericFolderNameToSaveIndexNounFiles);
+        //        var countLinesProcessed = 0.0;
+        //        foreach (var line in content)
+        //        {
+        //            if (!line.Contains("=Passed") && !line.Contains("=Failed") && !string.IsNullOrEmpty(line))
+        //            {
+        //                if (!indexedNouns.Any(x => x.Key == line.ToLower().Trim()))
+        //                {
+        //                    indexedNouns.Add(line.ToLower().Trim(), ++index);
+        //                    lastTestCaseIndexed += index + " ";
+        //                }
+        //                else
+        //                {
+        //                    lastTestCaseIndexed += indexedNouns[line.ToLower().Trim()] + " ";
+        //                }
+        //            }
+        //            else
+        //            {
+        //                if (!string.IsNullOrEmpty(lastTestHeader))
+        //                    File.WriteAllText(genericFolderNameToSaveIndexNounFiles + @"\" + lastTestHeader + ".txt", lastTestCaseIndexed);
+        //                lastTestHeader = line;
+        //                lastTestCaseIndexed = "";
+        //            }
+        //            Console.WriteLine("Progress: Lines Processed=" + countLinesProcessed++ / content.Length * 100 + "%;\tVersions Processed=" + countVersionsProcessed / versions.Length * 100 + "%");
+        //        }
+
+        //        File.WriteAllLines(genericFolderNameToSaveIndexNounFiles + @"\" + v.ToString() + ".txt", indexedNouns.Select(x => x.Value + " " + x.Key).ToArray());
+        //        countVersionsProcessed++;
+        //    }
+        //}
         #endregion
 
         #region Not Required Anymore
@@ -1313,9 +2241,56 @@ namespace ExtractingTestCases
                     Console.Out.WriteLine((float)passedLines++ / (float)totalLines * 100 + "%");
                 }
             }
-            WriteTestCasesWithTopicCounts(testCaseIdWithCounts, testCaseIdWithTopics);
+            WriteTestCasesWithTopicCounts(testCaseIdWithCounts, testCaseIdWithTopics, "");
         }
-        public void WriteTestCasesWithTopicCounts(List<KeyValuePair<int, int>> testId_pair, List<KeyValuePair<int, List<string>>> testId_topics)
+
+        public void CountNounAndVerbCombinedForExcel(bool interactive)
+        {
+            var files = Directory.GetFiles(directoryForExtractedTestCases).Where(x => x.Contains("Tagged") && !x.Contains("Pairs"));
+            var fileCount = 0;
+            foreach (var file in files)
+            {
+                fileCount++;
+                var contents = File.ReadAllText(file);
+                var totalLines = contents.Split(new string[] { "\n" }, StringSplitOptions.RemoveEmptyEntries).Count();
+                var passedLines = 0;
+                int currentTestCaseID = 0;
+                List<KeyValuePair<int, int>> testCaseIdWithCounts = new List<KeyValuePair<int, int>>();
+                List<KeyValuePair<int, List<string>>> testCaseIdWithTopics = new List<KeyValuePair<int, List<string>>>();
+                var testCaseTopicsCount = 0;
+                var testCaseTopics = new List<string>();
+                foreach (var line in contents.Split(new string[] { "\n" }, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    if (line.Contains("Test Case ID: "))
+                    {
+                        if (currentTestCaseID != 0)
+                        {
+                            testCaseIdWithCounts.Add(new KeyValuePair<int, int>(currentTestCaseID, testCaseTopicsCount));
+                            testCaseIdWithTopics.Add(new KeyValuePair<int, List<string>>(currentTestCaseID, testCaseTopics));
+                            testCaseTopicsCount = 0;
+                            testCaseTopics = new List<string>();
+                        }
+                        currentTestCaseID = Convert.ToInt32(line.Split(new String[] { ": " }, StringSplitOptions.RemoveEmptyEntries)[1].Split('~')[0].Replace(".html", "").Replace(".txt", ""));
+                    }
+                    else
+                    {
+                        testCaseTopicsCount += line.Split(new String[] { " " }, StringSplitOptions.RemoveEmptyEntries).Where(x => x.Contains('/')).Count();
+                        testCaseTopics.AddRange(line.Split(new String[] { " " }, StringSplitOptions.RemoveEmptyEntries).Where(x => x.Contains('/')).ToList());
+                    }
+                    if (interactive)
+                    {
+                        Console.Clear();
+                        Console.Out.WriteLine((float)passedLines++ / (float)totalLines * 100 + "%");
+                    }
+                }
+                WriteTestCasesWithTopicCounts(testCaseIdWithCounts, testCaseIdWithTopics, file);
+            }
+        }
+
+
+
+
+        public void WriteTestCasesWithTopicCounts(List<KeyValuePair<int, int>> testId_pair, List<KeyValuePair<int, List<string>>> testId_topics, string fileName)
         {
             StringBuilder fileString = new StringBuilder();
             for (var test = 0; test < testId_pair.Count; test++)
@@ -1326,13 +2301,20 @@ namespace ExtractingTestCases
                 fileString.Append(testId_pair[test].Value);
                 fileString.Append("\n");
             }
-            File.WriteAllText(fileToSaveTestIdWithTopicCounts, fileString.ToString());
+            if (string.IsNullOrEmpty(fileName))
+                File.WriteAllText(fileToSaveTestIdWithTopicCounts, fileString.ToString());
+            else
+                File.WriteAllText(fileName.Substring(0, fileName.LastIndexOf(".")) + "_NounVerbTopics.txt", fileString.ToString());
         }
-        public void ReadTestCasesWithTopicCounts(out List<KeyValuePair<int, int>> testId_Count, out List<KeyValuePair<int, List<string>>> testId_Topics)
+        public void ReadTestCasesWithTopicCounts(out List<KeyValuePair<int, int>> testId_Count, out List<KeyValuePair<int, List<string>>> testId_Topics, string fileName)
         {
             testId_Count = new List<KeyValuePair<int, int>>();
             testId_Topics = new List<KeyValuePair<int, List<string>>>();
-            var testIdPairsContent = File.ReadAllText(fileToSaveTestIdWithTopicCounts);
+            string testIdPairsContent = "";
+            if (string.IsNullOrEmpty(fileName))
+                testIdPairsContent = File.ReadAllText(fileToSaveTestIdWithTopicCounts);
+            else
+                testIdPairsContent = File.ReadAllText(fileName.Substring(0, fileName.LastIndexOf("_")) + "_NounVerbTopics.txt");
             var currentId = 0;
             foreach (var line in testIdPairsContent.Split(new string[] { "\n" }, StringSplitOptions.RemoveEmptyEntries))
             {
@@ -1352,7 +2334,7 @@ namespace ExtractingTestCases
         {
             List<KeyValuePair<int, int>> testId_count = new List<KeyValuePair<int, int>>();
             List<KeyValuePair<int, List<string>>> testId_topics = new List<KeyValuePair<int, List<string>>>();
-            ReadTestCasesWithTopicCounts(out testId_count, out testId_topics);
+            ReadTestCasesWithTopicCounts(out testId_count, out testId_topics, "");
 
             //List<int> sortedTestIds = testId_count.OrderByDescending(x => x.Value).Select(x => x.Key).ToList();
             List<string> topics = (from t in testId_topics select t.Value).ToList().SelectMany(l => l).Distinct().ToList();
@@ -1437,14 +2419,140 @@ namespace ExtractingTestCases
 
 
 
-            
+
             ////CLUSTERING
             //int clusterCount = 2; var testing = Cluster(dataForClustering, clusterCount); ShowVector(testing, true); ShowClustered(dataForClustering, testing, clusterCount, 1);
 
             ////SHOW CLUSTERED PAIRS           //for (var c = 0; c < clusterCount; c++)            //{            //    Console.Out.WriteLine("Cluster "+ c);            //    for (var d = 0; d < testing.Count() ; d++)            //    {            //        if(testing[d] == c)            //        Console.Out.Write(PairWithIds[d]);            //    }            //    Console.Out.WriteLine("-----------------------------------------------------------------------------------------------------------------");            //    Console.Out.WriteLine("-----------------------------------------------------------------------------------------------------------------");            //    Console.Out.WriteLine("-----------------------------------------------------------------------------------------------------------------");            //    Console.Out.WriteLine("-----------------------------------------------------------------------------------------------------------------");            //    Console.Out.WriteLine("-----------------------------------------------------------------------------------------------------------------");            //}
         }
 
-        public void FindMetricsForNounVerbCombined(int indexForIteration, List<KeyValuePair<int, int>> testId_count, List<KeyValuePair<string, int>> topicCounts, List<KeyValuePair<int, List<string>>> testId_topics, List<KeyValuePair<int, bool>> testResults, int totalFaults, List<int> originalOrder, string fileToSaveResults) {
+
+
+        public void OrderForTopicCountsForExcel(bool interactive)
+        {
+            var results = DeserializeResults(@"C:\Temp\SEALab\NLP-Project\ExtractedTestCases\LatestVersions\ExtractedObjectForAllTestResults.txt");
+            var files = Directory.GetFiles(directoryForExtractedTestCases).Where(x => x.Contains("NounVerbTopics"));
+            foreach (var file in files)
+            {
+                List<KeyValuePair<int, int>> testId_count = new List<KeyValuePair<int, int>>();
+                List<KeyValuePair<int, List<string>>> testId_topics = new List<KeyValuePair<int, List<string>>>();
+                ReadTestCasesWithTopicCounts(out testId_count, out testId_topics, file);
+
+                //List<int> sortedTestIds = testId_count.OrderByDescending(x => x.Value).Select(x => x.Key).ToList();
+                List<string> topics = (from t in testId_topics select t.Value).ToList().SelectMany(l => l).Distinct().ToList();
+                List<KeyValuePair<string, int>> topicCounts = new List<KeyValuePair<string, int>>();
+                //Getting counts of topics
+                foreach (var t in topics)
+                {
+                    var count = (from tests in testId_topics
+                                 where tests.Value.Contains(t)
+                                 select tests.Key).Count();
+                    topicCounts.Add(new KeyValuePair<string, int>(t, count));
+                }
+
+                #region Extracting Test Results from the File
+                //extracting the results of the test cases of this litmus
+                /******************************IMPORTANT*******************************/
+                /********Go to the result file, and replace § character with ~*********/
+
+                var totalFaults = 0;
+                List<KeyValuePair<int, bool>> testResults = new List<KeyValuePair<int, bool>>();
+                var currentFile = file.Substring(file.LastIndexOf("\\") + 1).Replace("Tagged", "").Split('~');
+                var currentProduct = currentFile[0];
+                var currentVersion = currentFile[1].Split('_')[0];
+                foreach (var result in results.Where(x => x.Product == currentProduct && x.Version == currentVersion))
+                {
+                    testResults.Add(new KeyValuePair<int, bool>(result.Id, result.Result));
+                }
+                totalFaults = testResults.Count(x => x.Value == false);
+                #endregion
+
+                ///********Go to the result file, and replace § character with ~*********/
+                //var resultFile = File.ReadAllLines(fileToExtractResultsOfTestCasesFrom);
+                //var totalFaults = 0;
+                ////record results in this list, and put true if a test case passes else false for fail or bad test case
+                //List<KeyValuePair<int, bool>> testResults = new List<KeyValuePair<int, bool>>();
+                //foreach (var line in resultFile)
+                //{
+                //    if (line.Contains("id="))
+                //    {
+                //        var testId = Convert.ToInt32(line.Substring(line.IndexOf("id=") + 3/*for i d =*/).Split('~')[0]);
+                //        if (line.Substring(0, 10).Contains("Pass"))
+                //        {
+                //            testResults.Add(new KeyValuePair<int, bool>(testId, true));
+                //        }
+                //        else
+                //        {
+                //            totalFaults++;
+                //            testResults.Add(new KeyValuePair<int, bool>(testId, false));
+                //        }
+                //    }
+                //}
+
+                var originalOrder = (from t in testId_count
+                                     select t.Key).ToList();
+
+
+
+
+
+
+
+
+
+
+
+
+
+                var fileToSaveResultsTo = file.Substring(0, file.LastIndexOf("\\") + 1) + "Results\\NounVerbCountMethod\\NAPFD10\\" + file.Substring(file.LastIndexOf("\\") + 1, file.LastIndexOf("_") - 1 - file.LastIndexOf("\\")).Replace("Tagged", "") + ".txt";
+
+
+
+
+
+                if (testId_count.Count > 100)
+                    File.WriteAllText(fileToSaveResultsTo, "INITIATING ....................................\n\n");
+                for (var indexForRandomizingResult = 0; indexForRandomizingResult < 100; indexForRandomizingResult++)
+                {
+                    if (testId_count.Count > 100)
+                        FindMetricsForNounVerbCombined(indexForRandomizingResult, testId_count, topicCounts, testId_topics, testResults, totalFaults, originalOrder, fileToSaveResultsTo);
+                }
+
+
+                //System.Diagnostics.Process.Start(fileToSaveResultForChartsNounVerbCount);
+                ProcessStartInfo pi = new ProcessStartInfo(fileToSaveResultsTo);
+                pi.Arguments = Path.GetFileName(fileToSaveResultsTo);
+                pi.UseShellExecute = true;
+                pi.WorkingDirectory = Path.GetDirectoryName(fileToSaveResultsTo);
+                pi.FileName = @"C:\Program Files (x86)\Notepad++\\notepad++.exe";
+                pi.Verb = "OPEN";
+                Process.Start(pi);
+            }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            ////CLUSTERING
+            //int clusterCount = 2; var testing = Cluster(dataForClustering, clusterCount); ShowVector(testing, true); ShowClustered(dataForClustering, testing, clusterCount, 1);
+
+            ////SHOW CLUSTERED PAIRS           //for (var c = 0; c < clusterCount; c++)            //{            //    Console.Out.WriteLine("Cluster "+ c);            //    for (var d = 0; d < testing.Count() ; d++)            //    {            //        if(testing[d] == c)            //        Console.Out.Write(PairWithIds[d]);            //    }            //    Console.Out.WriteLine("-----------------------------------------------------------------------------------------------------------------");            //    Console.Out.WriteLine("-----------------------------------------------------------------------------------------------------------------");            //    Console.Out.WriteLine("-----------------------------------------------------------------------------------------------------------------");            //    Console.Out.WriteLine("-----------------------------------------------------------------------------------------------------------------");            //    Console.Out.WriteLine("-----------------------------------------------------------------------------------------------------------------");            //}
+        }
+
+
+
+        public void FindMetricsForNounVerbCombined(int indexForIteration, List<KeyValuePair<int, int>> testId_count, List<KeyValuePair<string, int>> topicCounts, List<KeyValuePair<int, List<string>>> testId_topics, List<KeyValuePair<int, bool>> testResults, int totalFaults, List<int> originalOrder, string fileToSaveResults)
+        {
 
 
             var faults = testResults.Where(x => x.Value == false);
@@ -1470,7 +2578,7 @@ namespace ExtractingTestCases
 
 
 
-            
+
             List<string> sortedTopics = topicCounts.OrderByDescending(x => x.Value).Select(x => x.Key).ToList();
             sortedTopics = sortedTopics.Except(testId_topics.FirstOrDefault(x => x.Key == MyRank.FirstOrDefault()).Value).ToList();
             while (sortedTopics.Any())
@@ -1519,7 +2627,7 @@ namespace ExtractingTestCases
                 }
                 Console.Out.WriteLine("Progress: " + progress / MyRank.Count + "%, APFD: " + myAPFD);
                 apfdPrioritizedForIteration[Convert.ToInt32(progress)] = myAPFD;
-                if (faults.Any(x=>x.Key == MyRank[index]))//testResults.Any(x => x.Key == MyRank[index] && x.Value == false))
+                if (faults.Any(x => x.Key == MyRank[index]))//testResults.Any(x => x.Key == MyRank[index] && x.Value == false))
                 {
                     faultsDetected++;
                     faultDetectedPercentage.Add((float)(progress / MyRank.Count), (float)faultsDetected / faultCount);
@@ -1568,24 +2676,24 @@ namespace ExtractingTestCases
             double[] apfdForIteration = new double[randomRanking.Count];
             indexDetectingFault = 0;
             faultDetectedPercentage = new Dictionary<float, float>();
-            for (var index = 0; index < originalOrder.Count; index++)
+            for (var index = 0; index < randomRanking.Count; index++)
             {
                 var thisTest = testResults.FirstOrDefault(x => x.Key == randomRanking[index]);
                 if (thisTest.Key != 0 && thisTest.Value == false)
                 {
                     indexDetectingFault += index;
-                    randomAPFD = 1 - ((float)indexDetectingFault / (float)(totalFaults * originalOrder.Count)) + (float)(1 / (float)(2 * originalOrder.Count));
+                    randomAPFD = 1 - ((float)indexDetectingFault / (float)(totalFaults * randomRanking.Count)) + (float)(1 / (float)(2 * randomRanking.Count));
                 }
                 Console.Out.WriteLine("Progress: " + progress / MyRank.Count + "%, APFD: " + randomAPFD);
                 apfdForIteration[Convert.ToInt32(progress)] = randomAPFD;
                 if (faults.Any(x => x.Key == randomRanking[index]))//testResults.Any(x => x.Key == MyRank[index] && x.Value == false))
                 {
                     faultsDetected++;
-                    faultDetectedPercentage.Add((float)(progress / MyRank.Count), (float)faultsDetected / faultCount);
+                    faultDetectedPercentage.Add((float)(progress / randomRanking.Count), (float)faultsDetected / faultCount);
                 }
                 progress++;
             }
-            
+
             //Console.In.Read();
 
 
@@ -1935,6 +3043,56 @@ namespace ExtractingTestCases
                 }
             }
             return indexOfMin;
+        }
+        #endregion
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        #region Statechum Code
+        public void ProcessTrace()
+        {
+            var functionNames = new string[] { "calculatePidCore2", "interpolatePIDgain", "GetPidDTermIsHdgRate", "GetPidRate", "endPidTransition", "initiatePidTransition", "smoothPidTransition", "pidTransitionInProcess", "pidSmoothingFirstSample", "GetPidDTermLPF", "getPIDshift" };
+            //var functionName = "endPidTransition";
+            foreach (var functionName in functionNames)
+            {
+                var traceContent = File.ReadAllLines(@"C:\Temp\Test3trace.txt");
+                List<int> enterIndices = new List<int>();
+                List<int> exitIndices = new List<int>();
+                int lineNumber = 0;
+                foreach (var line in traceContent)
+                {
+                    if (line.Contains(@"Enter -> int " + functionName) || line.Contains(@"Enter -> void " + functionName))
+                    {
+                        enterIndices.Add(lineNumber);
+                    }
+                    if (line.Contains(@"Exit <- int " + functionName) || line.Contains(@"Exit <- void " + functionName))
+                    {
+                        exitIndices.Add(lineNumber);
+                    }
+                    lineNumber++;
+                }
+                List<string> functionEnterLines = new List<string>();
+                for (var a = 0; a < enterIndices.Count; a++)
+                {
+                    for (var i = enterIndices[a]; i <= exitIndices[a]; i++)
+                    {
+                        if (traceContent[i].Contains("Enter ->"))
+                            functionEnterLines.Add(traceContent[i]);
+                    }
+                }
+                File.WriteAllLines(@"C:\TEMP\Trace3ExtractedFunctions\" + functionName + ".txt", functionEnterLines);
+            }
         }
         #endregion
 
