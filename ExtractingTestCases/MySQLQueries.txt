@@ -15,3 +15,50 @@ SELECT lcv.productversion_id AS 'Version',lcv.id as 'Test ID', er.status as 'Res
 Tablet Versions
 
 SELECT cp.name, cpv.version FROM `core_product`cp inner join core_productversion cpv where  cpv.version between 16 and 29 and cpv.deleted_by_id is null and cp.id = 4 and cpv.product_id = 4 and cpv.version like '%Tablet%' ORDER BY `cpv`.`version` ASC
+
+
+RESULTS EXTRACTED FROM VIEWS SENT BY HADI (FORWARDED EMAIL)
+SELECT version,casevesion_id,step_id,status FROM `all_products_steps_result` where product_name like '%obile%' and version in ('16','17','18','19','20','21','22','23','24','25','26','27','28','29') order by casevesion_id
+SELECT version,casevesion_id,instruction FROM `all_products_steps_view` where product_name like '%obile%' and version in ('16','17','18','19','20','21','22','23','24','25','26','27','28','29') order by casevesion_id
+
+
+
+STATS ALL VERSION
+SELECT statistic_result.result_case_number,statistic_steps.steps_number,(statistic_steps.steps_number-statistic_result.result_case_number) as no_result_number,statistic_steps.product_name FROM (SELECT count(*) as result_case_number,all_products_steps_has_result.product_name FROM (SELECT all_products_steps_view.step_id as steps_id,all_products_steps_view.product_name FROM all_products_steps_view WHERE all_products_steps_view.step_id in (select execution_stepresult.step_id FROM execution_stepresult)) as all_products_steps_has_result GROUP BY all_products_steps_has_result.product_name) as statistic_result, (SELECT count(*) as steps_number,all_products_steps_view.product_name FROM all_products_steps_view GROUP BY all_products_steps_view.product_name) as statistic_steps WHERE statistic_steps.product_name=statistic_result.product_name
+
+
+SELECT failed_statistic.failed_number,passed_statistic.passed_number,passed_statistic.product_name
+FROM
+(SELECT count(failed_cases.status) as failed_number,failed_cases.product_name
+FROM
+(SELECT main_table.step_id,main_table.instruction,temp_failed_cases.status,main_table.product_name,main_table.version
+FROM  (all_products_steps_result as main_table LEFT JOIN
+      (SELECT * FROM all_products_steps_result  WHERE all_products_steps_result.status="failed") as temp_failed_cases ON main_table.step_id=temp_failed_cases.step_id)) as failed_cases
+GROUP BY failed_cases.product_name) as failed_statistic,
+
+(SELECT count(passed_cases.status) as passed_number,passed_cases.product_name
+FROM
+(SELECT main_table.step_id,main_table.instruction,temp_passed_cases.status,main_table.product_name,main_table.version
+FROM  (all_products_steps_result as main_table LEFT JOIN
+      (SELECT * FROM all_products_steps_result  WHERE all_products_steps_result.status="passed") as temp_passed_cases ON main_table.step_id=temp_passed_cases.step_id)) as passed_cases
+GROUP BY passed_cases.product_name) as passed_statistic
+WHERE 
+	passed_statistic.product_name = failed_statistic.product_name
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	select `moztrap`.`library_caseversion`.`id` AS `casevesion_id`,`moztrap`.`library_case`.`id` AS `case_id`,`moztrap`.`library_casestep`.`id` AS `step_id`,`moztrap`.`library_casestep`.`instruction` AS `instruction`,`moztrap`.`library_casestep`.`expected` AS `expected`,`moztrap`.`library_caseversion`.`name` AS `version_name`,`moztrap`.`library_caseversion`.`description` AS `description`,`moztrap`.`library_caseversion`.`status` AS `status`,`moztrap`.`core_productversion`.`version` AS `version`,`moztrap`.`core_product`.`name` AS `product_name` from ((((`moztrap`.`library_casestep` join `moztrap`.`library_caseversion`) join `moztrap`.`library_case`) join `moztrap`.`core_productversion`) join `moztrap`.`core_product`) where ((`moztrap`.`library_casestep`.`caseversion_id` = `moztrap`.`library_caseversion`.`id`) and (`moztrap`.`library_caseversion`.`productversion_id` = `moztrap`.`core_productversion`.`id`) and (`moztrap`.`core_productversion`.`product_id` = `moztrap`.`core_product`.`id`) and (`moztrap`.`library_caseversion`.`case_id` = `moztrap`.`library_case`.`id`) and isnull(`moztrap`.`library_casestep`.`deleted_on`) and isnull(`moztrap`.`library_caseversion`.`deleted_on`) and isnull(`moztrap`.`library_case`.`deleted_on`)) order by `moztrap`.`core_productversion`.`version`
