@@ -1,0 +1,963 @@
+
+%% bare_conf.tex
+%% V1.3
+%% 2007/01/11
+%% by Michael Shell
+%% See:
+%% http://www.michaelshell.org/
+%% for current contact information.
+%%
+%% This is a skeleton file demonstrating the use of IEEEtran.cls
+%% (requires IEEEtran.cls version 1.7 or later) with an IEEE conference paper.
+%%
+%% Support sites:
+%% http://www.michaelshell.org/tex/ieeetran/
+%% http://www.ctan.org/tex-archive/macros/latex/contrib/IEEEtran/
+%% and
+%% http://www.ieee.org/
+
+%%*************************************************************************
+%% Legal Notice:
+%% This code is offered as-is without any warranty either expressed or
+%% implied; without even the implied warranty of MERCHANTABILITY or
+%% FITNESS FOR A PARTICULAR PURPOSE! 
+%% User assumes all risk.
+%% In no event shall IEEE or any contributor to this code be liable for
+%% any damages or losses, including, but not limited to, incidental,
+%% consequential, or any other damages, resulting from the use or misuse
+%% of any information contained here.
+%%
+%% All comments are the opinions of their respective authors and are not
+%% necessarily endorsed by the IEEE.
+%%
+%% This work is distributed under the LaTeX Project Public License (LPPL)
+%% ( http://www.latex-project.org/ ) version 1.3, and may be freely used,
+%% distributed and modified. A copy of the LPPL, version 1.3, is included
+%% in the base LaTeX documentation of all distributions of LaTeX released
+%% 2003/12/01 or later.
+%% Retain all contribution notices and credits.
+%% ** Modified files should be clearly indicated as such, including  **
+%% ** renaming them and changing author support contact information. **
+%%
+%% File list of work: IEEEtran.cls, IEEEtran_HOWTO.pdf, bare_adv.tex,
+%%                    bare_conf.tex, bare_jrnl.tex, bare_jrnl_compsoc.tex
+%%*************************************************************************
+
+% *** Authors should verify (and, if needed, correct) their LaTeX system  ***
+% *** with the testflow diagnostic prior to trusting their LaTeX platform ***
+% *** with production work. IEEE's font choices can trigger bugs that do  ***
+% *** not appear when using other class files.                            ***
+% The testflow support page is at:
+% http://www.michaelshell.org/tex/testflow/
+
+
+
+% Note that the a4paper option is mainly intended so that authors in
+% countries using A4 can easily print to A4 and see how their papers will
+% look in print - the typesetting of the document will not typically be
+% affected with changes in paper size (but the bottom and side margins will).
+% Use the testflow package mentioned above to verify correct handling of
+% both paper sizes by the user's LaTeX system.
+%
+% Also note that the "draftcls" or "draftclsnofoot", not "draft", option
+% should be used if it is desired that the figures are to be displayed in
+% draft mode.
+%
+\documentclass[conference]{IEEEtran}
+\usepackage{blindtext, graphicx}
+\usepackage{multirow}
+% Add the compsoc option for Computer Society conferences.
+%
+% If IEEEtran.cls has not been installed into the LaTeX system files,
+% manually specify the path to it like:
+% \documentclass[conference]{../sty/IEEEtran}
+
+
+
+
+
+% Some very useful LaTeX packages include:
+% (uncomment the ones you want to load)
+
+
+% *** MISC UTILITY PACKAGES ***
+%
+%\usepackage{ifpdf}
+% Heiko Oberdiek's ifpdf.sty is very useful if you need conditional
+% compilation based on whether the output is pdf or dvi.
+% usage:
+% \ifpdf
+%   % pdf code
+% \else
+%   % dvi code
+% \fi
+% The latest version of ifpdf.sty can be obtained from:
+% http://www.ctan.org/tex-archive/macros/latex/contrib/oberdiek/
+% Also, note that IEEEtran.cls V1.7 and later provides a builtin
+% \ifCLASSINFOpdf conditional that works the same way.
+% When switching from latex to pdflatex and vice-versa, the compiler may
+% have to be run twice to clear warning/error messages.
+
+
+
+
+
+
+% *** CITATION PACKAGES ***
+%
+%\usepackage{cite}
+% cite.sty was written by Donald Arseneau
+% V1.6 and later of IEEEtran pre-defines the format of the cite.sty package
+% \cite{} output to follow that of IEEE. Loading the cite package will
+% result in citation numbers being automatically sorted and properly
+% "compressed/ranged". e.g., [1], [9], [2], [7], [5], [6] without using
+% cite.sty will become [1], [2], [5]--[7], [9] using cite.sty. cite.sty's
+% \cite will automatically add leading space, if needed. Use cite.sty's
+% noadjust option (cite.sty V3.8 and later) if you want to turn this off.
+% cite.sty is already installed on most LaTeX systems. Be sure and use
+% version 4.0 (2003-05-27) and later if using hyperref.sty. cite.sty does
+% not currently provide for hyperlinked citations.
+% The latest version can be obtained at:
+% http://www.ctan.org/tex-archive/macros/latex/contrib/cite/
+% The documentation is contained in the cite.sty file itself.
+
+
+
+
+
+
+% *** GRAPHICS RELATED PACKAGES ***
+%
+\ifCLASSINFOpdf
+  % \usepackage[pdftex]{graphicx}
+  % declare the path(s) where your graphic files are
+  % \graphicspath{{../pdf/}{../jpeg/}}
+  % and their extensions so you won't have to specify these with
+  % every instance of \includegraphics
+  % \DeclareGraphicsExtensions{.pdf,.jpeg,.png}
+\else
+  % or other class option (dvipsone, dvipdf, if not using dvips). graphicx
+  % will default to the driver specified in the system graphics.cfg if no
+  % driver is specified.
+  % \usepackage[dvips]{graphicx}
+  % declare the path(s) where your graphic files are
+  % \graphicspath{{../eps/}}
+  % and their extensions so you won't have to specify these with
+  % every instance of \includegraphics
+  % \DeclareGraphicsExtensions{.eps}
+\fi
+% graphicx was written by David Carlisle and Sebastian Rahtz. It is
+% required if you want graphics, photos, etc. graphicx.sty is already
+% installed on most LaTeX systems. The latest version and documentation can
+% be obtained at: 
+% http://www.ctan.org/tex-archive/macros/latex/required/graphics/
+% Another good source of documentation is "Using Imported Graphics in
+% LaTeX2e" by Keith Reckdahl which can be found as epslatex.ps or
+% epslatex.pdf at: http://www.ctan.org/tex-archive/info/
+%
+% latex, and pdflatex in dvi mode, support graphics in encapsulated
+% postscript (.eps) format. pdflatex in pdf mode supports graphics
+% in .pdf, .jpeg, .png and .mps (metapost) formats. Users should ensure
+% that all non-photo figures use a vector format (.eps, .pdf, .mps) and
+% not a bitmapped formats (.jpeg, .png). IEEE frowns on bitmapped formats
+% which can result in "jaggedy"/blurry rendering of lines and letters as
+% well as large increases in file sizes.
+%
+% You can find documentation about the pdfTeX application at:
+% http://www.tug.org/applications/pdftex
+
+
+
+
+
+% *** MATH PACKAGES ***
+%
+%\usepackage[cmex10]{amsmath}
+% A popular package from the American Mathematical Society that provides
+% many useful and powerful commands for dealing with mathematics. If using
+% it, be sure to load this package with the cmex10 option to ensure that
+% only type 1 fonts will utilized at all point sizes. Without this option,
+% it is possible that some math symbols, particularly those within
+% footnotes, will be rendered in bitmap form which will result in a
+% document that can not be IEEE Xplore compliant!
+%
+% Also, note that the amsmath package sets \interdisplaylinepenalty to 10000
+% thus preventing page breaks from occurring within multiline equations. Use:
+%\interdisplaylinepenalty=2500
+% after loading amsmath to restore such page breaks as IEEEtran.cls normally
+% does. amsmath.sty is already installed on most LaTeX systems. The latest
+% version and documentation can be obtained at:
+% http://www.ctan.org/tex-archive/macros/latex/required/amslatex/math/
+
+
+
+
+
+% *** SPECIALIZED LIST PACKAGES ***
+%
+%\usepackage{algorithmic}
+% algorithmic.sty was written by Peter Williams and Rogerio Brito.
+% This package provides an algorithmic environment fo describing algorithms.
+% You can use the algorithmic environment in-text or within a figure
+% environment to provide for a floating algorithm. Do NOT use the algorithm
+% floating environment provided by algorithm.sty (by the same authors) or
+% algorithm2e.sty (by Christophe Fiorio) as IEEE does not use dedicated
+% algorithm float types and packages that provide these will not provide
+% correct IEEE style captions. The latest version and documentation of
+% algorithmic.sty can be obtained at:
+% http://www.ctan.org/tex-archive/macros/latex/contrib/algorithms/
+% There is also a support site at:
+% http://algorithms.berlios.de/index.html
+% Also of interest may be the (relatively newer and more customizable)
+% algorithmicx.sty package by Szasz Janos:
+% http://www.ctan.org/tex-archive/macros/latex/contrib/algorithmicx/
+
+
+
+
+% *** ALIGNMENT PACKAGES ***
+%
+%\usepackage{array}
+% Frank Mittelbach's and David Carlisle's array.sty patches and improves
+% the standard LaTeX2e array and tabular environments to provide better
+% appearance and additional user controls. As the default LaTeX2e table
+% generation code is lacking to the point of almost being broken with
+% respect to the quality of the end results, all users are strongly
+% advised to use an enhanced (at the very least that provided by array.sty)
+% set of table tools. array.sty is already installed on most systems. The
+% latest version and documentation can be obtained at:
+% http://www.ctan.org/tex-archive/macros/latex/required/tools/
+
+
+%\usepackage{mdwmath}
+%\usepackage{mdwtab}
+% Also highly recommended is Mark Wooding's extremely powerful MDW tools,
+% especially mdwmath.sty and mdwtab.sty which are used to format equations
+% and tables, respectively. The MDWtools set is already installed on most
+% LaTeX systems. The lastest version and documentation is available at:
+% http://www.ctan.org/tex-archive/macros/latex/contrib/mdwtools/
+
+
+% IEEEtran contains the IEEEeqnarray family of commands that can be used to
+% generate multiline equations as well as matrices, tables, etc., of high
+% quality.
+
+
+%\usepackage{eqparbox}
+% Also of notable interest is Scott Pakin's eqparbox package for creating
+% (automatically sized) equal width boxes - aka "natural width parboxes".
+% Available at:
+% http://www.ctan.org/tex-archive/macros/latex/contrib/eqparbox/
+
+
+
+
+
+% *** SUBFIGURE PACKAGES ***
+%\usepackage[tight,footnotesize]{subfigure}
+% subfigure.sty was written by Steven Douglas Cochran. This package makes it
+% easy to put subfigures in your figures. e.g., "Figure 1a and 1b". For IEEE
+% work, it is a good idea to load it with the tight package option to reduce
+% the amount of white space around the subfigures. subfigure.sty is already
+% installed on most LaTeX systems. The latest version and documentation can
+% be obtained at:
+% http://www.ctan.org/tex-archive/obsolete/macros/latex/contrib/subfigure/
+% subfigure.sty has been superceeded by subfig.sty.
+
+
+
+%\usepackage[caption=false]{caption}
+%\usepackage[font=footnotesize]{subfig}
+% subfig.sty, also written by Steven Douglas Cochran, is the modern
+% replacement for subfigure.sty. However, subfig.sty requires and
+% automatically loads Axel Sommerfeldt's caption.sty which will override
+% IEEEtran.cls handling of captions and this will result in nonIEEE style
+% figure/table captions. To prevent this problem, be sure and preload
+% caption.sty with its "caption=false" package option. This is will preserve
+% IEEEtran.cls handing of captions. Version 1.3 (2005/06/28) and later 
+% (recommended due to many improvements over 1.2) of subfig.sty supports
+% the caption=false option directly:
+%\usepackage[caption=false,font=footnotesize]{subfig}
+%
+% The latest version and documentation can be obtained at:
+% http://www.ctan.org/tex-archive/macros/latex/contrib/subfig/
+% The latest version and documentation of caption.sty can be obtained at:
+% http://www.ctan.org/tex-archive/macros/latex/contrib/caption/
+
+
+
+
+% *** FLOAT PACKAGES ***
+%
+%\usepackage{fixltx2e}
+% fixltx2e, the successor to the earlier fix2col.sty, was written by
+% Frank Mittelbach and David Carlisle. This package corrects a few problems
+% in the LaTeX2e kernel, the most notable of which is that in current
+% LaTeX2e releases, the ordering of single and double column floats is not
+% guaranteed to be preserved. Thus, an unpatched LaTeX2e can allow a
+% single column figure to be placed prior to an earlier double column
+% figure. The latest version and documentation can be found at:
+% http://www.ctan.org/tex-archive/macros/latex/base/
+
+
+
+%\usepackage{stfloats}
+% stfloats.sty was written by Sigitas Tolusis. This package gives LaTeX2e
+% the ability to do double column floats at the bottom of the page as well
+% as the top. (e.g., "\begin{figure*}[!b]" is not normally possible in
+% LaTeX2e). It also provides a command:
+%\fnbelowfloat
+% to enable the placement of footnotes below bottom floats (the standard
+% LaTeX2e kernel puts them above bottom floats). This is an invasive package
+% which rewrites many portions of the LaTeX2e float routines. It may not work
+% with other packages that modify the LaTeX2e float routines. The latest
+% version and documentation can be obtained at:
+% http://www.ctan.org/tex-archive/macros/latex/contrib/sttools/
+% Documentation is contained in the stfloats.sty comments as well as in the
+% presfull.pdf file. Do not use the stfloats baselinefloat ability as IEEE
+% does not allow \baselineskip to stretch. Authors submitting work to the
+% IEEE should note that IEEE rarely uses double column equations and
+% that authors should try to avoid such use. Do not be tempted to use the
+% cuted.sty or midfloat.sty packages (also by Sigitas Tolusis) as IEEE does
+% not format its papers in such ways.
+
+
+
+
+
+% *** PDF, URL AND HYPERLINK PACKAGES ***
+%
+%\usepackage{url}
+% url.sty was written by Donald Arseneau. It provides better support for
+% handling and breaking URLs. url.sty is already installed on most LaTeX
+% systems. The latest version can be obtained at:
+% http://www.ctan.org/tex-archive/macros/latex/contrib/misc/
+% Read the url.sty source comments for usage information. Basically,
+% \url{my_url_here}.
+
+
+
+
+
+% *** Do not adjust lengths that control margins, column widths, etc. ***
+% *** Do not use packages that alter fonts (such as pslatex).         ***
+% There should be no need to do such things with IEEEtran.cls V1.6 and later.
+% (Unless specifically asked to do so by the journal or conference you plan
+% to submit to, of course. )
+
+
+% correct bad hyphenation here
+\hyphenation{op-tical net-works semi-conduc-tor}
+\usepackage{color, colortbl}
+\definecolor{Gray}{gray}{0.9}
+
+
+\graphicspath{ {images/} }
+
+\begin{document}
+%
+% paper title
+% can use linebreaks \\ within to get better formatting as desired
+\title{Bare Demo of IEEEtran.cls for Conferences}
+
+
+% author names and affiliations
+% use a multiple column layout for up to three different
+% affiliations
+\author{\IEEEauthorblockN{Michael Shell}
+\IEEEauthorblockA{School of Electrical and\\Computer Engineering\\
+Georgia Institute of Technology\\
+Atlanta, Georgia 30332--0250\\
+Email: http://www.michaelshell.org/contact.html}
+\and
+\IEEEauthorblockN{Homer Simpson}
+\IEEEauthorblockA{Twentieth Century Fox\\
+Springfield, USA\\
+Email: homer@thesimpsons.com}
+\and
+\IEEEauthorblockN{James Kirk\\ and Montgomery Scott}
+\IEEEauthorblockA{Starfleet Academy\\
+San Francisco, California 96678-2391\\
+Telephone: (800) 555--1212\\
+Fax: (888) 555--1212}}
+
+% conference papers do not typically use \thanks and this command
+% is locked out in conference mode. If really needed, such as for
+% the acknowledgment of grants, issue a \IEEEoverridecommandlockouts
+% after \documentclass
+
+% for over three affiliations, or if they all won't fit within the width
+% of the page, use this alternative format:
+% 
+%\author{\IEEEauthorblockN{Michael Shell\IEEEauthorrefmark{1},
+%Homer Simpson\IEEEauthorrefmark{2},
+%James Kirk\IEEEauthorrefmark{3}, 
+%Montgomery Scott\IEEEauthorrefmark{3} and
+%Eldon Tyrell\IEEEauthorrefmark{4}}
+%\IEEEauthorblockA{\IEEEauthorrefmark{1}School of Electrical and Computer Engineering\\
+%Georgia Institute of Technology,
+%Atlanta, Georgia 30332--0250\\ Email: see http://www.michaelshell.org/contact.html}
+%\IEEEauthorblockA{\IEEEauthorrefmark{2}Twentieth Century Fox, Springfield, USA\\
+%Email: homer@thesimpsons.com}
+%\IEEEauthorblockA{\IEEEauthorrefmark{3}Starfleet Academy, San Francisco, California 96678-2391\\
+%Telephone: (800) 555--1212, Fax: (888) 555--1212}
+%\IEEEauthorblockA{\IEEEauthorrefmark{4}Tyrell Inc., 123 Replicant Street, Los Angeles, California 90210--4321}}
+
+
+
+
+% use for special paper notices
+%\IEEEspecialpapernotice{(Invited Paper)}
+
+
+
+
+% make the title area
+\maketitle
+
+
+\begin{abstract}
+%\boldmath
+\blindtext[1]
+\end{abstract}
+% IEEEtran.cls defaults to using nonbold math in the Abstract.
+% This preserves the distinction between vectors and scalars. However,
+% if the journal you are submitting to favors bold math in the abstract,
+% then you can use LaTeX's standard command \boldmath at the very start
+% of the abstract to achieve this. Many IEEE journals frown on math
+% in the abstract anyway.
+
+% Note that keywords are not normally used for peerreview papers.
+\begin{IEEEkeywords}
+IEEEtran, journal, \LaTeX, paper, template.
+\end{IEEEkeywords}
+
+
+
+
+
+
+% For peer review papers, you can put extra information on the cover
+% page as needed:
+% \ifCLASSOPTIONpeerreview
+% \begin{center} \bfseries EDICS Category: 3-BBND \end{center}
+% \fi
+%
+% For peerreview papers, this IEEEtran command inserts a page break and
+% creates the second title. It will be ignored for other modes.
+\IEEEpeerreviewmaketitle
+
+
+
+\section{Introduction}
+\blindtext
+
+\subsection{Subsection Heading Here}
+\blindtext
+
+% needed in second column of first page if using \IEEEpubid
+%\IEEEpubidadjcol
+
+% An example of a floating figure using the graphicx package.
+% Note that \label must occur AFTER (or within) \caption.
+% For figures, \caption should occur after the \includegraphics.
+% Note that IEEEtran v1.7 and later has special internal code that
+% is designed to preserve the operation of \label within \caption
+% even when the captionsoff option is in effect. However, because
+% of issues like this, it may be the safest practice to put all your
+% \label just after \caption rather than within \caption{}.
+%
+% Reminder: the "draftcls" or "draftclsnofoot", not "draft", class
+% option should be used if it is desired that the figures are to be
+% displayed while in draft mode.
+%
+%\begin{figure}[!t]
+%\centering
+%\includegraphics[width=2.5in]{myfigure}
+% where an .eps filename suffix will be assumed under latex, 
+% and a .pdf suffix will be assumed for pdflatex; or what has been declared
+% via \DeclareGraphicsExtensions.
+%\caption{Simulation Results}
+%\label{fig_sim}
+%\end{figure}
+
+% Note that IEEE typically puts floats only at the top, even when this
+% results in a large percentage of a column being occupied by floats.
+
+
+% An example of a double column floating figure using two subfigures.
+% (The subfig.sty package must be loaded for this to work.)
+% The subfigure \label commands are set within each subfloat command, the
+% \label for the overall figure must come after \caption.
+% \hfil must be used as a separator to get equal spacing.
+% The subfigure.sty package works much the same way, except \subfigure is
+% used instead of \subfloat.
+%
+%\begin{figure*}[!t]
+%\centerline{\subfloat[Case I]\includegraphics[width=2.5in]{subfigcase1}%
+%\label{fig_first_case}}
+%\hfil
+%\subfloat[Case II]{\includegraphics[width=2.5in]{subfigcase2}%
+%\label{fig_second_case}}}
+%\caption{Simulation results}
+%\label{fig_sim}
+%\end{figure*}
+%
+% Note that often IEEE papers with subfigures do not employ subfigure
+% captions (using the optional argument to \subfloat), but instead will
+% reference/describe all of them (a), (b), etc., within the main caption.
+
+
+% An example of a floating table. Note that, for IEEE style tables, the 
+% \caption command should come BEFORE the table. Table text will default to
+% \footnotesize as IEEE normally uses this smaller font for tables.
+% The \label must come after \caption as always.
+%
+%\begin{table}[!t]
+%% increase table row spacing, adjust to taste
+%\renewcommand{\arraystretch}{1.3}
+% if using array.sty, it might be a good idea to tweak the value of
+% \extrarowheight as needed to properly center the text within the cells
+%\caption{An Example of a Table}
+%\label{table_example}
+%\centering
+%% Some packages, such as MDW tools, offer better commands for making tables
+%% than the plain LaTeX2e tabular which is used here.
+%\begin{tabular}{|c||c|}
+%\hline
+%One & Two\\
+%\hline
+%Three & Four\\
+%\hline
+%\end{tabular}
+%\end{table}
+
+
+% Note that IEEE does not put floats in the very first column - or typically
+% anywhere on the first page for that matter. Also, in-text middle ("here")
+% positioning is not used. Most IEEE journals use top floats exclusively.
+% Note that, LaTeX2e, unlike IEEE journals, places footnotes above bottom
+% floats. This can be corrected via the \fnbelowfloat command of the
+% stfloats package.
+
+\section{Approach}
+In this paper we focussed on the TSP problem with respect to manual system-level black-box acceptance test suites. This type of testing normally deals with the final product hence is not dependent on source code. We assume that the tests are already written with the help of domain experts, satisfying coverage or other criteria, but due to the very nature of regression testing they need to be optimized. As these are acceptance or system validation tests, these tests normally comprise of a script of set of actions to be performed on the system under test, and the expected outcome on the application of those steps; looking at which tester marks if the test case is a failing or a passing test case. \par
+
+Typically the TSP techniques used in the area include code-coverage and code-diversity techniques, but since we do not have access to code for manual acceptance testing, those can not be applied on this test setup. Previous relevant methods in Manual TSP as presented in \cite{hemmati2015prioritization} include Topic coverage-based, Text diversity-based and History-based TSP techniques . Hemmati et al \cite{hemmati2015prioritization} used a topic modeling technique called Latent Dirichlet Allocation (LDA), used first in \cite{thomas2014prioritization}, to extract \textit{Topics} from the test case scripts and use them as units, which combine together to make a bigger feature being tested by the test case. In other words, the idea behind \textit{Topics} was that test cases test feature(s) of a program and if we are able to extract all features of a program from the test scripts then we have a list of topics which can be used to rank the test case in a way that we cover as many topics earlier in the ranked test suite. This technique was called \textit{Topic coverage-based TSP}. The second technique presented was called \textit{Text diversity-based TSP} and the idea was to rank the subsequent test cases as far from each other as possible. Since the assumption already made before was that each test case tests a certain feature or sets of them, two test cases being far from each other would mean that they test entirely different set of features, and hence fault detected by them would be different too; increasing the fault detection rate overall in the test suite. Euclidean and Manhattan distances were used to find the differences between the test cases and a greedy algorithm was presented that used those distances to rank a test suite. 
+\par
+In this paper, we have used the idea from \cite{hemmati2015prioritization} that the test cases are written manually in human readable language and should not be treated as automated test cases. Which made us wonder if going into the semantics will give an edge over traditional methods. We started with the normal pre-processing of textual test cases, explained later in the section, and then used NLP techniques to extract the semantics and use them to prioritize the test suite.
+\par
+The reason we think this way is due to the very nature of these kinds of test cases, which gives a set of commands to be performed by the tester. A sample test case is shown in Table \ref{table:1} from Mozila Firefox Mobile version 16, in which a tester is required to do certain sequence of actions to test whether the \textit{auto rotation feature} is working or not. The tester takes this script and starts executing from the first step, checking whether the outcome he sees is similar to the expected outcome of that step. If he finds so, he marks the step as "Passed" or else "Failed". Moztrap system manages the results of each step, and in the end each test case result is just the \textit{AND} result of the individual results of each step. Which means that if a test case is failing, 1 or more steps have failed. The point that we want to focus here is that if a step has failed, it is because of one or more instructions provided in the step, which is obviously different to the steps which are marked as "Passed" by the tester. This difference is what we need to target and exploit to get better coverage of faults earlier in a test suite.
+\par
+Coming back to the original test cases, since the steps in the instructions comprise of actions to be performed on subjects one can argue that in such a scenario if we represent the test cases in the form of actions and subjects only, removing all the other unimportant words, we are not losing any information. Hence we applied NLP technique called Part of Speech (POS) Tagging to tag the whole dataset using Stanford Maximum Entropy POS Tagger \cite{tout2003POS}, after applying standard text-mining pre-processing techniques also specified in \cite{hemmati2015prioritization}, including the removal of urls and special characters and splitting words on hyphens "-" and underscores "\_". To demonstrate a sample outcome of this we have presented a sample test case and its tagged specimen in Table \ref{table:1} and \ref{table:4}. As shown in the tables, while removing all the unimportant words, we are still able to retain the information in the test case. Moving on from here, the remaining experiments lie with trying different possible ways of representing test cases using their tagged instances, to apply different TSP techniques and getting better ordering of the test suite. The representation chosen for experiment include \textbf{Nouns only}, \textbf{Verbs Only}, \textbf{Sequence of Nouns and Verbs} as they appear in a test, and \textbf{Verb Noun pairs}. Idea behind choosing these representations for each is that perhaps the fault caught by each step in failing test case rely on \textit{Subject(s)}, or \textit{Action(s)}, or sequence of \textit{Actions} on \textit{Subjects} or \textit{Actions} performed on specific \textit{Subjects}. The tool used for tagging was downloaded from \cite{loglinearweb} and is under full GNU Generic Public License. The tags that were used for retaining Nouns and Verbs were confirmed from \cite{sant1990POS}. \par
+For \textit{Nouns only}, only the words tagged as Noun were retained, similar for \textit{Verbs only}. For sequence of Nouns and Verbs the whole tagged version of a test case was retained, which only contains Nouns and Verbs, hence retaining the order in which they appear. For \textit{Verb Noun pair} representation, we made pairs of Verbs and Nouns for each Noun following a Verb. Hence, if a Verb, lets say "Click", is followed by two nouns, lets say "Status" and "Bar", we make two pairs from this as \textless Click,Status\textgreater and \textless Click,Bar\textgreater. One thing to note here is that because of the technique we are going to present later, we retained the repeating words as they appear in the test cases just for the purpose of counting them. However, for applying the actual techniques, repeating words were removed and the test cases were represented by only unique words depending on the type of representation used.
+\par
+The next step in our approach revolves around trying different techniques with these representations. Initially we kept our experiment to \textless \textit{representation}\textgreater  \_coverage-based, inspired by code coverage based, and \textless \textit{representation}\textgreater \_diversity-based prioritization as performed by Hemmati et al. in \cite{hemmati2015prioritization}, using the same algorithm provided by them. To recall the techniques as explained in \cite{hemmati2015prioritization}, Topic coverage-based approach is actaully Additional Coverage technique that uses a greedy algorithm to find the test cases with most number of topics. In each iteration, while going through the test suite, it adds the next test case with most number of topics in the ordered list while removing the covered topics from remaining unordered test cases. In this way, the approach guarantees to satisfy the coverage criteria as early as possible in a test suite. 
+
+\begin{table}[!t]
+\centering
+\caption{Real Test Case from Mozila Firefox Mobile version 16 }
+\begin{tabular}{ ||p{3.5cm}|p{3.5cm}||  }
+ \hline
+ \multicolumn{2}{|c|}{\centering Test Case ID:1206, Product: Mobile, Version:16, Obj: Tests Auto-Rotation} \\
+ \hline
+ \hline
+ \textbf{Steps to Perform}   & \textbf{Expected Outcomes} \\
+ \hline
+ 1. Launch fennec while in portrait mode. & 1. Fennec should launch with a homepage fits for portrait mode. \\
+ \hline
+ 2. Rotate the device to landscape mode. & 2. Fennec should rotate to a homepage fits for landscape mode. \\
+ \hline
+ 3. Rotate the device back to portrait mode. & 3. Fennec should rotate back to the original after step 1.\\
+ \hline
+\end{tabular}
+\label{table:1}
+\end{table}
+
+\begin{table}[!t]
+\centering
+\caption{Real Tagged Test Case from Mozila Firefox Mobile version 16 }
+\begin{tabular}{ ||p{7cm}||  }
+ \hline
+ \multicolumn{1}{|c|}{\centering Test Case ID:1206, Product: Mobile, Version:16, Obj: Tests Auto-Rotation} \\
+ \hline
+ \hline
+ \textbf{Tagged Steps} \\
+ \hline
+ 1. Launch/VB fennec/NN portrait/NN mode/NN. \\
+ \hline
+ 2. Rotate/VB device/NN landscape/NN mode/NN. \\
+ \hline
+ 3. Rotate/VB device/NN portrait/NN mode/NN.\\
+ \hline
+\end{tabular}
+\label{table:4}
+\end{table}
+
+
+
+\begin{table}[!t]
+\centering
+\caption{Real Test Case Representations from Mozila Firefox Mobile version 16 }
+\begin{tabular}{ ||p{1.35cm}|p{1.35cm}|p{1.35cm}|p{1.65cm}||  }
+ \hline
+ \multicolumn{4}{|c|}{\centering Test Case ID:1206, Product: Mobile, Version:16, Obj: Tests Auto-Rotation} \\
+ \hline
+ \hline
+ \textbf{Nouns Only} & \textbf{Verbs Only} & \textbf{Sequence} & \textbf{VerbNoun Pairs} \\
+ \hline
+fennec	 & launch & launch    & launch,fennec    \\
+ \hline
+portrait & rotate & fennec    & launch,portrait  \\
+ \hline
+device	 & 		  & portrait  & launch,mode      \\
+ \hline
+landscape&  	  & mode      & rotate,device    \\
+ \hline
+device	 & 		  & rotate    & rotate,landscape \\
+ \hline
+portrait & 		  & device    & rotate,mode      \\
+ \hline
+         &        & landscape & rotate,device    \\
+ \hline
+         &        & mode      & rotate,portrait  \\
+ \hline
+         &        & rotate    & rotate,mode      \\
+ \hline
+         &        & device    &                  \\
+ \hline
+         &        & portrait  &                  \\
+ \hline
+         &        & mode      &                  \\
+ \hline
+\end{tabular}
+\label{table:5}
+\end{table}
+
+
+\section{Experiment}
+\subsection{Objective}
+\subsection{Research Questions}
+\subsubsection{RQ1}
+\textbf{Can NLP based approach improve existing text-based prioritization?} In this research question, we compare NLP based approaches with three other TCP techniques namely, random baseline, topic-diversity and text-diversity for fourteen rapid releases of both Mozilla’s Mobile and Tablet Firefox applications. 
+\subsubsection{RQ2}
+\subsection{Subject of Study}
+\subsection{Experiment Results}
+\subsubsection{RQ1 Results}
+To answer the question of \textit{“Can NLP based approach improve existing text-based prioritization?”}, we look at the efficiency of all the NLP based coverage and diversity approaches (namely NounDiversity, VerbDiverity, VerbNounPairDiversity, VerbNounSequenceDiversity, NounAdditionalGreedy, VerbAdditionalGreedy, VerbNounPairAdditionalGreedy, VerbNounSequenceAdditionalGreedy, VerbNounSequenceAdditionalGreedy) along with four existing text-based approaches (e.g., Random, TextDiversity, TopicDiversity and TopicCoverage).
+
+Table \ref{table:2} shows APFD results of Firefox Mobile by taking the median of 10 runs for each TCP techniques. It clearly represents that, the coverage and diversity based NLP techniques' performance are not significantly well compared to text-based approaches. Both the NLP and text-based approaches' performance are relatively same. On the other hand, in case of Firefox Tablet, the very same thing happens here as well. As we see in Table \ref{7}, the APFD results of Firefox Tablet by taking the median of 10 runs for each TCP techniques, none of the coverage and diversity based NLP techniques outperforms TextDiversity. In fact, they all perform in the same order. Though, in both Mobile and Tablet Firefox, the coverage based NLP techniques perform relatively well compared to TopicCoverage, but these are not better than TextDoversity. 
+
+To summarize the answer of RQ1 from an empirical point of view, Figure \ref{figure:1} shows 
+
+
+
+% mobile medians
+\begin{table*}[t!]
+\centering
+\caption{Median and average APFDs (over 10 runs) of the twelve TCP techniques in the fourteen rapid releases of Mobile Firefox --VFr(VerbFrequency), VAG(VerbAdditionalGreedy), VNFr(VerbNounPairFrequency), VNAG(VerbNounAdditionalGreedy), VNSFr(VerbNounSequenseFrequency), VNSAG(VerbNounSequenceAdditionalGreedy), NFr(NounFrequency), NAG(NounAdditionalGreedy), ND(NounDiversity), VD(VerbDiversity), VND(VerbVounPairDiversity), VNSD(VerbNounSequenceDiversity),
+TpD(TopicDiversity), Rnd(RandomTCP), TxD(TextDiversity) and TpC(TopicCoverage).}
+\label{table:2}
+\begin{tabular}{ |c|c c c c|c c c c|c c c c|c c c c|}
+\hline
+\multirow{3}{*}{Version} &
+\multicolumn{16}{|c|}{Median APFD} \\
+\cline{2-17}
+\multicolumn{1}{|c}{} & 
+\multicolumn{4}{|c}{Existing Text-based} & \multicolumn{4}{|c}{NLP Coverage}& \multicolumn{4}{|c}{NLP Diversity} &
+\multicolumn{4}{|c|}{NLP Frequency}\\
+\cline{2-17}
+&    Rnd                 & TxD   & TpD   & TpC   & NAG          & VAG   & VNAG  & VNSAG & ND            & VD    & VND   & VNSD  & NFr           & VFr   & VNFr  & VNSFr \\
+\hline
+Mobile 16 & 47.90               & 60.71 & 49.51 & 44.25 & 53.05        & 52.90 & 52.65 & 53.05 & 53.73         & 56.95 & 53.48 & 54.19 & 74.06         & 81.16 & 57.86 & 67.08 \\
+Mobile 17 & 48.47               & 56.91 & 48.91 & 43.21 & 56.97        & 51.75 & 56.07 & 55.25 & 56.75         & 57.16 & 56.42 & 54.62 & 77.46         & 83.05 & 61.49 & 66.64 \\
+Mobile 18 & 49.47               & 59.49 & 51.54 & 37.41 & 54.23        & 53.63 & 54.15 & 53.86 & 52.65         & 58.82 & 54.93 & 53.06 & 76.74         & 81.40 & 60.55 & 66.41 \\
+Mobile 19 & 48.96               & 54.91 & 51.93 & 39.28 & 53.14        & 52.12 & 52.43 & 52.00 & 54.18         & 59.16 & 52.82 & 53.46 & 75.74         & 81.68 & 58.01 & 67.01 \\
+Mobile 20 & 53.30               & 60.91 & 53.49 & 42.11 & 54.69        & 53.60 & 53.83 & 54.03 & 53.60         & 56.41 & 52.90 & 57.63 & 74.65         & 83.28 & 61.14 & 65.36 \\
+Mobile 21 & 49.69               & 57.00 & 52.80 & 38.40 & 56.30        & 57.80 & 56.77 & 56.80 & 50.33         & 59.06 & 51.80 & 59.55 & 80.26         & 85.14 & 63.60 & 71.20 \\
+Mobile 22 & 50.25               & 65.61 & 54.66 & 46.53 & 55.32        & 56.48 & 54.74 & 55.55 & 54.92         & 66.42 & 54.26 & 55.01 & 75.67         & 81.45 & 61.27 & 69.98 \\
+Mobile 23 & 53.51               & 58.45 & 49.02 & 52.35 & 59.26        & 55.88 & 60.28 & 59.35 & 56.71         & 61.87 & 57.25 & 61.39 & 79.85         & 89.08 & 68.80 & 76.33 \\
+Mobile 24 & 48.06               & 57.49 & 48.17 & 45.21 & 53.16        & 55.23 & 53.89 & 53.20 & 52.64         & 59.04 & 52.46 & 51.10 & 82.90         & 87.68 & 68.12 & 75.93 \\
+Mobile 25 & 50.73               & 62.37 & 54.11 & 43.40 & 52.72        & 53.76 & 51.56 & 51.88 & 51.02         & 58.87 & 49.44 & 53.37 & 77.88         & 84.51 & 56.70 & 70.84 \\
+Mobile 26 & 44.44               & 53.14 & 49.44 & 30.68 & 52.50        & 54.45 & 53.62 & 53.79 & 49.77         & 60.54 & 52.32 & 49.94 & 83.08         & 86.55 & 63.42 & 69.46 \\
+Mobile 27 & 47.53               & 45.12 & 48.88 & 52.83 & 57.25        & 59.64 & 58.31 & 58.39 & 59.13         & 67.78 & 57.57 & 55.34 & 83.03         & 82.70 & 65.42 & 72.42 \\
+Mobile 28 & 44.01               & 55.78 & 44.02 & 48.48 & 58.20        & 60.38 & 58.80 & 60.17 & 58.19         & 69.16 & 57.83 & 56.14 & 80.19         & 80.84 & 62.62 & 65.93 \\
+Mobile 29 & 43.69               & 58.93 & 44.13 & 53.73 & 67.58        & 61.09 & 52.20 & 67.81 & 61.98         & 63.67 & 62.72 & 62.80 & 77.57         & 77.23 & 68.56 & 65.98 \\
+\hline 
+Average   & 48.57               & 57.63 & 50.04 & 44.13 & 56.03        & 55.62 & 54.95 & 56.08 & 53.95         & 59.11 & 53.87 & 54.81 & \cellcolor{Gray} 78.51         & \cellcolor{Gray} 83.27 & \cellcolor{Gray} 62.68 & \cellcolor{Gray} 69.33\\
+\hline
+\end{tabular}
+\end{table*}
+
+
+% mobile A test = Effect size 
+
+\begin{table*}[t!]
+\centering
+\caption{The effect sizes of VerbFrequency vs. all other twelve TCP techniques, in the fourteen rapid releases of Mobile Firefox.}
+\label{table:6}
+\begin{tabular}{ |c|c c c c|c c c c|c c c c|c c c|}
+\hline
+\multirow{3}{*}{Version} &
+\multicolumn{15}{|c|}{Effect size of VFr vs.} \\
+\cline{2-16}
+\multicolumn{1}{|c}{} & 
+\multicolumn{4}{|c}{Existing Text-based} & \multicolumn{4}{|c}{NLP Coverage}& \multicolumn{4}{|c}{NLP Diversity} &
+\multicolumn{3}{|c|}{NLP Frequency}\\
+\cline{2-16}
+&    Rnd                 & TxD   & TpD   & TpC   & NAG          & VAG   & VNAG  & VNSAG & ND            & VD    & VND   & VNSD  & NFr           &  VNFr  & VNSFr \\
+\hline
+Mobile 16 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 0.98 & 1    & 1    \\
+Mobile 17 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1    & 1    & 1    \\
+Mobile 18 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 0.97 & 1    & 1    \\
+Mobile 19 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 0.95 & 1    & 1    \\
+Mobile 20 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1    & 1    & 1    \\
+Mobile 21 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 0.9  & 1    & 1    \\
+Mobile 22 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1    & 1    & 1    \\
+Mobile 23 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1    & 1    & 1    \\
+Mobile 24 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 0.89 & 1    & 0.95 \\
+Mobile 25 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 0.94 & 1    & 1    \\
+Mobile 26 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 0.71 & 1    & 1    \\
+Mobile 27 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 0.41 & 1    & 0.93 \\
+Mobile 28 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 0.65 & 1    & 1    \\
+Mobile 29 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 0.38 & 0.95 & 0.88 \\
+
+\hline
+\end{tabular}
+\end{table*}
+
+
+% tablet medians
+
+\begin{table*}[t!]
+\centering
+\caption{Median and average APFDs (over 10 runs) of the twelve TCP techniques in the fourteen rapid releases of Mobile Firefox --VFr(VerbFrequency), VAG(VerbAdditionalGreedy), VNFr(VerbNounPairFrequency), VNAG(VerbNounAdditionalGreedy), VNSFr(VerbNounSequenseFrequency), VNSAG(VerbNounSequenceAdditionalGreedy), NFr(NounFrequency), NAG(NounAdditionalGreedy), ND(NounDiversity), VD(VerbDiversity), VND(VerbVounPairDiversity), VNSD(VerbNounSequenceDiversity),
+TpD(TopicDiversity), Rnd(RandomTCP), TxD(TextDiversity) and TpC(TopicCoverage).}
+\label{table:7}
+\begin{tabular}{ |c|c c c c|c c c c|c c c c|c c c c|}
+\hline
+\multirow{3}{*}{Version} &
+\multicolumn{16}{|c|}{Median APFD} \\
+\cline{2-17}
+\multicolumn{1}{|c}{} & 
+\multicolumn{4}{|c}{Existing Text-based} & \multicolumn{4}{|c}{NLP Coverage}& \multicolumn{4}{|c}{NLP Diversity} &
+\multicolumn{4}{|c|}{NLP Frequency}\\
+\cline{2-17}
+&    Rnd                 & TxD   & TpD   & TpC   & NAG          & VAG   & VNAG  & VNSAG & ND            & VD    & VND   & VNSD  & NFr           & VFr   & VNFr  & VNSFr \\
+\hline
+Tablet 16 & 49.37 & 59.58 & 53.13 & 47.15 & 54.46 & 53.63 & 55.11 & 55.19 & 53.54 & 55.63 & 54.57 & 55.37 & 70.04 & 80.17 & 56.80 & 66.34 \\
+Tablet 17 & 49.30 & 60.46 & 51.02 & 40.65 & 56.36 & 53.93 & 56.85 & 56.25 & 54.31 & 55.06 & 55.07 & 53.48 & 70.97 & 81.35 & 58.00 & 66.46 \\
+Tablet 18 & 49.69 & 55.65 & 52.64 & 45.26 & 50.69 & 54.15 & 51.59 & 51.86 & 50.87 & 55.39 & 52.88 & 53.24 & 71.13 & 79.26 & 55.03 & 64.81 \\
+Tablet 19 & 49.62 & 52.86 & 50.59 & 46.22 & 54.75 & 51.55 & 53.94 & 52.82 & 54.65 & 49.72 & 53.62 & 54.28 & 70.04 & 79.28 & 56.66 & 66.37 \\
+Tablet 20 & 48.19 & 60.89 & 51.85 & 47.35 & 56.16 & 54.94 & 57.12 & 56.73 & 56.06 & 53.69 & 57.15 & 52.90 & 72.29 & 79.13 & 58.36 & 64.27 \\
+Tablet 21 & 49.42 & 64.30 & 52.35 & 42.71 & 58.19 & 56.86 & 59.57 & 58.70 & 56.11 & 57.83 & 57.89 & 54.25 & 71.46 & 75.68 & 58.16 & 66.37 \\
+Tablet 22 & 49.50 & 63.60 & 49.61 & 45.22 & 55.50 & 53.97 & 55.16 & 54.71 & 51.22 & 55.76 & 53.86 & 57.19 & 73.00 & 80.60 & 57.55 & 66.89 \\
+Tablet 23 & 50.02 & 64.13 & 51.23 & 48.06 & 57.95 & 58.25 & 61.48 & 60.46 & 56.23 & 57.61 & 60.36 & 58.73 & 77.04 & 83.28 & 57.81 & 64.64 \\
+Tablet 24 & 44.36 & 55.85 & 48.50 & 41.70 & 51.73 & 55.64 & 52.30 & 52.00 & 51.94 & 53.09 & 49.68 & 55.68 & 76.65 & 86.72 & 55.75 & 68.32 \\
+Tablet 25 & 49.69 & 54.19 & 51.20 & 44.58 & 49.47 & 58.24 & 50.69 & 52.28 & 52.68 & 55.19 & 50.62 & 52.67 & 76.02 & 81.18 & 57.76 & 69.61 \\
+Tablet 26 & 46.94 & 45.28 & 47.70 & 36.05 & 55.80 & 52.41 & 55.15 & 54.36 & 54.27 & 54.61 & 51.52 & 54.83 & 72.47 & 79.50 & 55.62 & 69.23 \\
+Tablet 27 & 46.25 & 53.67 & 45.04 & 55.71 & 51.32 & 57.64 & 53.43 & 54.53 & 55.02 & 58.52 & 53.00 & 58.71 & 73.89 & 81.25 & 55.32 & 65.87 \\
+Tablet 28 & 43.19 & 43.90 & 46.57 & 60.77 & 55.79 & 58.75 & 56.27 & 56.77 & 59.36 & 57.42 & 54.80 & 60.36 & 75.15 & 85.91 & 52.54 & 66.05 \\
+Tablet 29 & 41.37 & 56.27 & 46.04 & 68.27 & 61.04 & 59.68 & 62.71 & 62.38 & 63.32 & 65.97 & 60.85 & 64.65 & 71.64 & 77.22 & 55.26 & 66.77 \\
+\hline
+Average   & 49.34 & 56.06 & 50.81 & 45.74 & 55.64 & 55.29 & 55.15 & 54.95 & 54.48 & 55.51 & 54.22 & 55.10 & \cellcolor{Gray} 72.38 & \cellcolor{Gray} 80.38 & 56.73 & \cellcolor{Gray} 66.37\\
+\hline
+\end{tabular}
+\end{table*}
+
+
+% tablet u test 
+\begin{table*}[t!]
+\centering
+\caption{The effect sizes of VerbFrequency vs. all other twelve TCP techniques, in the fourteen rapid releases of Tablet Firefox.}
+\label{table:8}
+\begin{tabular}{ |c|c c c c|c c c c|c c c c|c c c|}
+\hline
+\multirow{3}{*}{Version} &
+\multicolumn{15}{|c|}{Effect size of VFr vs.} \\
+\cline{2-16}
+\multicolumn{1}{|c}{} & 
+\multicolumn{4}{|c}{Existing Text-based} & \multicolumn{4}{|c}{NLP Coverage}& \multicolumn{4}{|c}{NLP Diversity} &
+\multicolumn{3}{|c|}{NLP Frequency}\\
+\cline{2-16}
+&    Rnd                 & TxD   & TpD   & TpC   & NAG          & VAG   & VNAG  & VNSAG & ND            & VD    & VND   & VNSD  & NFr           &  VNFr  & VNSFr \\
+\hline
+Tablet 16 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1    & 1    & 1    \\
+Tablet 17 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1    & 1    & 1    \\
+Tablet 18 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 0.99 & 1    & 1    \\
+Tablet 19 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 0.98 & 1    & 1    \\
+Tablet 20 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 0.93 & 1    & 1    \\
+Tablet 21 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 0.83 & 1    & 0.99 \\
+Tablet 22 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 0.99 & 1    & 1    \\
+Tablet 23 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 0.97 & 1    & 1    \\
+Tablet 24 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 0.96 & 1    & 1    \\
+Tablet 25 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 0.95 & 1    & 1    \\
+Tablet 26 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 0.9  & 1    & 0.99 \\
+Tablet 27 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 0.89 & 1    & 0.99 \\
+Tablet 28 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 0.95 & 1    & 1    \\
+Tablet 29 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 0.83 & 0.95 & 0.89 \\
+\hline
+\end{tabular}
+\end{table*}
+
+% summary 
+
+\begin{table*}[t!]
+\centering
+\caption{Number of Verbs, Nouns, Verb Noun Pairs in Firefox Mobile and Tablet. }
+\label{table:9}
+\begin{tabular}{ |c|c c c|c c c|}
+\hline
+\multirow{2}{*}{Number of } &
+\multicolumn{3}{|c|}{Mobile} & \multicolumn{3}{|c|}{Tablet} \\
+\cline{2-7}
+\multicolumn{1}{|c|}{} & 
+               Avg.   & Max  & Min  & Avg.   & Max  & Min  \\
+\hline
+Nouns           & 478    & 543  & 395  & 489    & 674  & 588  \\
+Verbs           & 255    & 283  & 222  & 239    & 311  & 276  \\
+Verb Noun Pairs & 2105   & 2471 & 1687 & 1984   & 2871 & 2436 \\
+\hline
+\end{tabular}
+\end{table*}
+
+TO DO -- RQ2
+Within the NLP based approaches, Frequency based techniques are much better than AdditionalGreedy, since the minimum average APFD of Frequency and AdditionalGreedy based techniques are 62.68 and 54.96 respectively. Table also shows the average APFD of all the techniques. Since, the VerbFrequency dominates all others Frequency, AdditionalGreedy and text-based techniques, we chose VerbFrequency as the main candidate of NLP based techniques. 
+We conduct a statistical significance test called Mann-Whitney U test \cite{mann1947test} to make sure that the differences between VerbFrequency and the other TCP techniques are not by chance. The hypothesis is that if the p-value of the U test of two statistical distribution is greater than 0.05, then these two distributions are likely to be identical. That means, if the p-value of two techniques are greater than 0.05 then the performance of those techniques are likely to be identical. The results of the test are shown in Table \ref{table:3}. As we see, there is no similarity between the distribution of VerbFrequency and all other techniques except NounFrequency in version 26 to 29 of Firefox Mobile (shaded region). Surprisingly, in version 26 to 29 NounFrequency is also dominating along with VerbFrequency. 
+
+On the other hand, In Tablet Firefox, all the NLP based techniques still dominate text-based approaches as we see the APFD results by taking the median of 10 runs for each TCP techniques in Table \ref{table:4}. From all the text-based techniques, only the performance of TextDiversity is similar to AdditionalGreedy techniques. The same thing happens to Mobile as we saw earlier. However, in tablet Firefox one significant difference regarding Frequency based techniques is that, the performance of VerbNounPairFrequency is not as much as other Frequency based techniques. The average APFD of VerbNounPairFrequency is 56.73 which is similar to AdditionalGreedy-based techniques and TextDiversity. Here again, we took VerbFrequency as the main candidate of NLP based techniques since, it dominates all other techniques studied so far. Here, we again conduct Mann-Whitney U test with the Tablet data to check if the performance of any other technique is identical to the VerbFrequency. The test results are shown in Table \ref{table:5}. It shows that, no other techniques competes with VerbFrequency in any of those versions. Though the performance of NounFrequency in version 26 to 29 in Mobile Firefox is similar to VerbFrequency, but in Tablet Firefox, its performance is not similar in any of those versions. However, NounFrequency is the second most effective NLP based TCP techniques. 
+
+To summarize all these statistical comparisons, ... need boxplots
+
+
+\begin{figure*}{h}
+  \includegraphics[width=6.5in,height=3.5in]{mobile/16}
+  \caption{APFD for Mozilla Firefox Mobile v16}\label{fig:16}
+\end{figure*}
+
+
+
+
+\subsubsection{RQ2 Results}
+
+
+
+\section{Conclusion}
+\blindtext
+
+
+
+
+
+% if have a single appendix:
+%\appendix[Proof of the Zonklar Equations]
+% or
+%\appendix  % for no appendix heading
+% do not use \section anymore after \appendix, only \section*
+% is possibly needed
+
+% use appendices with more than one appendix
+% then use \section to start each appendix
+% you must declare a \section before using any
+% \subsection or using \label (\appendices by itself
+% starts a section numbered zero.)
+%
+
+
+\appendices
+\section{Proof of the First Zonklar Equation}
+\blindtext
+
+% use section* for acknowledgement
+\section*{Acknowledgment}
+
+
+The authors would like to thank...
+
+
+% Can use something like this to put references on a page
+% by themselves when using endfloat and the captionsoff option.
+\ifCLASSOPTIONcaptionsoff
+  \newpage
+\fi
+
+
+
+% trigger a \newpage just before the given reference
+% number - used to balance the columns on the last page
+% adjust value as needed - may need to be readjusted if
+% the document is modified later
+%\IEEEtriggeratref{8}
+% The "triggered" command can be changed if desired:
+%\IEEEtriggercmd{\enlargethispage{-5in}}
+
+% references section
+
+% can use a bibliography generated by BibTeX as a .bbl file
+% BibTeX documentation can be easily obtained at:
+% http://www.ctan.org/tex-archive/biblio/bibtex/contrib/doc/
+% The IEEEtran BibTeX style support page is at:
+% http://www.michaelshell.org/tex/ieeetran/bibtex/
+%\bibliographystyle{IEEEtran}
+% argument is your BibTeX string definitions and bibliography database(s)
+%\bibliography{IEEEabrv,../bib/paper}
+%
+% <OR> manually copy in the resultant .bbl file
+% set second argument of \begin to the number of references
+% (used to reserve space for the reference number labels box)
+\begin{thebibliography}{1}
+
+\bibitem{IEEEhowto:kopka}
+H.~Kopka and P.~W. Daly, \emph{A Guide to \LaTeX}, 3rd~ed.\hskip 1em plus  0.5em minus 0.4em\relax Harlow, England: Addison-Wesley, 1999.
+\bibitem{hemmati2015prioritization}
+H.~Hemmati, Z.~Fang, and M.~V.~Mantyla, \emph{Prioritizing Manual Test Cases in Traditional and Rapid Release Environments}, \hskip 1em plus
+  0.5em minus 0.4em\relax Software Testing, Verification and Validation (ICST), 2015  IEEE 8th International Conference on. IEEE, 2015.
+\bibitem{thomas2014prioritization}
+S.~W.~Thomas, H.~Hemmati, A.~E.~Hassan, and D.~Blostein, \emph{Static test case prioritization using topic models} \hskip 1em plus
+  0.5em minus 0.4em\relax Empirical Software Engineering, vol. 19, no. 1, pp. 182–212, 2014.
+\bibitem{mann1947test}
+H.~B.~Mann and D.~R.~Whitney, \emph{On a test of whether one of two random variables is stochastically larger than the other.} \hskip 1em plus
+ 0.5em minus 0.4em\relax The annals of mathematical statistics (1947): 50-60.
+\bibitem{tout2003POS}
+K.~Toutanova, et al. \emph{Feature-rich part-of-speech tagging with a cyclic dependency network.} \hskip 1em plus
+ 0.5em minus 0.4em\relax Proceedings of the 2003 Conference of the North American Chapter of the Association for Computational Linguistics on Human Language Technology-Volume 1. Association for Computational Linguistics, 2003.
+\bibitem{sant1990POS}
+B.~Santorini \emph{Part-of-speech tagging guidelines for the Penn Treebank Project} 3rd~rev. \hskip 1em plus  0.5em minus 0.4em\relax 1990.
+\bibitem{loglinearweb}
+\emph{http://nlp.stanford.edu/software/tagger.shtml}
+\end{thebibliography}
+
+% biography section
+% 
+% If you have an EPS/PDF photo (graphicx package needed) extra braces are
+% needed around the contents of the optional argument to biography to prevent
+% the LaTeX parser from getting confused when it sees the complicated
+% \includegraphics command within an optional argument. (You could create
+% your own custom macro containing the \includegraphics command to make things
+% simpler here.)
+%\begin{biography}[{\includegraphics[width=1in,height=1.25in,clip,keepaspectratio]{mshell}}]{Michael Shell}
+% or if you just want to reserve a space for a photo:
+
+\begin{IEEEbiography}[{\includegraphics[width=1in,height=1.25in,clip,keepaspectratio]{picture}}]{John Doe}
+\blindtext
+\end{IEEEbiography}
+
+% You can push biographies down or up by placing
+% a \vfill before or after them. The appropriate
+% use of \vfill depends on what kind of text is
+% on the last page and whether or not the columns
+% are being equalized.
+
+%\vfill
+
+% Can be used to pull up biographies so that the bottom of the last one
+% is flush with the other column.
+%\enlargethispage{-5in}
+
+
+
+
+% that's all folks
+\end{document}
+
+
